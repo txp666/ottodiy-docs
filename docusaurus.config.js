@@ -131,7 +131,7 @@ const config = {
             items: [
               {
                 label: 'B站',
-                href: 'https://space.bilibili.com/509795217',
+                href: 'https://b23.tv/7BLN9j1',
               },
               {
                 label: 'QQ群(暂无）',

@@ -2,11 +2,11 @@
 sidebar_position: 1
 ---
 
-# 欢迎了解 Otto DIY 机器人
+# Otto
 
-Otto DIY 是一个开源的可自行制作的机器人，它有着可爱的外形和丰富的功能，非常适合作为教育工具和个人创客项目。本网站专注于分享基于 ESP32 IDF 开发的 AI 增强版 Otto 机器人。
+Otto 是一个开源的可自行制作的机器人，它有着可爱的外形和丰富的功能，非常适合作为教育工具和个人创客项目。本网站专注于分享基于 ESP32 IDF 开发的 AI 增强版 Otto 机器人。
 
-![Otto DIY 机器人](/img/ottoRobot2.png)
+![Otto DIY 机器人](../static/img/ottoRobot2.png)
 
 ## 什么是 ESP32+AI Otto 机器人？
 

@@ -131,7 +131,7 @@ const config = {
             items: [
               {
                 label: 'B站',
-                href: 'https://space.bilibili.com/509795217?spm_id_from=333.1387.0.0',
+                href: 'https://space.bilibili.com/509795217',
               },
               {
                 label: 'QQ群(暂无）',

@@ -1,0 +1,59 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #f06323; /* Otto橙色 */
+  --ifm-color-primary-dark: #e65311;
+  --ifm-color-primary-darker: #d94e0f;
+  --ifm-color-primary-darkest: #b3400d;
+  --ifm-color-primary-light: #f2753b;
+  --ifm-color-primary-lighter: #f38147;
+  --ifm-color-primary-lightest: #f69e72;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-font-family-base: 'Nunito', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --ifm-heading-font-family: 'Nunito', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #ff8147;
+  --ifm-color-primary-dark: #ff6d2a;
+  --ifm-color-primary-darker: #ff631c;
+  --ifm-color-primary-darkest: #ee4a00;
+  --ifm-color-primary-light: #ff9564;
+  --ifm-color-primary-lighter: #ff9f72;
+  --ifm-color-primary-lightest: #ffbeae;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* 全局样式覆盖 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+.container {
+  padding: 0 1rem;
+}
+
+.margin-right--md {
+  margin-right: 1rem;
+}
+
+.margin-top--lg {
+  margin-top: 3rem;
+}
+
+/* 动画效果 */
+.button {
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

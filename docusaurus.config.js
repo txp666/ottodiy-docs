@@ -22,7 +22,7 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'ottodiy', // Usually your GitHub org/user name.
+  organizationName: 'txp666', // Usually your GitHub org/user name.
   projectName: 'ottodiy-docs', // Usually your repo name.
 
   onBrokenLinks: 'warn',
@@ -46,7 +46,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/yourusername/ottodiy-website/tree/main/',
+            'https://github.com/txp666/ottodiy-docs/tree/main/',
         },
         blog: {
           showReadingTime: true,
@@ -57,7 +57,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/yourusername/ottodiy-website/tree/main/',
+            'https://github.com/txp666/ottodiy-docs/tree/main/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -108,7 +108,7 @@ const config = {
             label: '程序下载',
           },
           {
-            href: 'https://github.com/yourusername/ottodiy',
+            href: 'https://github.com/txp666/ottodiy-docs',
             label: 'GitHub',
             position: 'right',
           },

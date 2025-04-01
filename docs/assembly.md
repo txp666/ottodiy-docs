@@ -1,7 +1,7 @@
 ---
 id: assembly
 title: 组装教程
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # 组装教程
@@ -99,11 +99,9 @@ sidebar_position: 3
 
 ### 5. 电路板安装
 
-</p>
 <p align="center">
   <img src="../static/img/assembly/step5_1.png" alt="step5_1" />
   <div align="center"><em>图13：固定喇叭，有个线的开槽</em></div>
-</p>
 </p>
 <p align="center">
   <img src="../static/img/assembly/step5_2.png" alt="step5_2" />

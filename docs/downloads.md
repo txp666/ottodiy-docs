@@ -1,7 +1,7 @@
 ---
 id: downloads
 title: 程序烧录
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 # 程序烧录

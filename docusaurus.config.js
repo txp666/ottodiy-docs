@@ -98,14 +98,14 @@ const config = {
             label: 'Bom清单',
           },
           {
-            to: '/docs/assembly', 
-            position: 'left',
-            label: '组装教程',
-          },
-          {
             to: '/docs/downloads',
             position: 'left',
             label: '程序下载',
+          },
+          {
+            to: '/docs/assembly', 
+            position: 'left',
+            label: '组装教程',
           },
           {
             href: 'https://github.com/txp666/ottodiy-docs',

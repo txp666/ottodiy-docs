@@ -1,4 +1,4 @@
-# Otto
+# [Otto](http://ottodiy.tech/) - ottodiy.tech
 
 Otto 是一个开源的可自行制作的机器人，它有着可爱的外形和丰富的功能，非常适合作为教育工具和个人创客项目。本网站专注于分享基于 ESP32 IDF 开发的 AI 增强版 Otto 机器人。
 

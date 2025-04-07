@@ -167,7 +167,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 ## 常见问题
 
 1. **舵机不转动**
-
+   - 重新启动
    - 检查接线是否正确
    - 确认电源供应正常
    - 验证程序是否正确烧录

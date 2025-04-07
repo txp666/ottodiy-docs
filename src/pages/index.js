@@ -46,7 +46,7 @@ export default function Home() {
                 自己的Otto机器人。
               </p>
               <p>
-                本网站目前仅分享由<a href="https://space.bilibili.com/345131903" target="_blank" rel="noopener noreferrer">B站飞起小鹏</a>修改的ESP32版+AI小智 的 Otto机器人 的制作文档，Arduino版本转到<a href="https://www.ottodiy.com/academy" target="_blank" rel="noopener noreferrer">官方网站</a>
+                本网站目前仅分享由<a href="https://b23.tv/7BLN9j1" target="_blank" rel="noopener noreferrer">B站飞起小鹏</a>修改的ESP32版+AI小智 的 Otto机器人 的制作文档，Arduino版本转到<a href="https://www.ottodiy.com/academy" target="_blank" rel="noopener noreferrer">官方网站</a>
               </p>
               <p>
                 ESP32 AI版本基于小智已实现：Wi-Fi/4G连接、离线语音唤醒、流式对话、多语言识别、声纹识别、AI大模型集成、可配置角色和LCD表情显示等多种功能，让Otto变得更加智能！

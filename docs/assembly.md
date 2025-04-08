@@ -17,7 +17,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 在开始组装之前，请确保您已经：
 
 1. 准备好所有必要的零部件（参考[零部件清单](/docs/bom)）
-2. 准备好所需的工具
+2. 准备好所需的工具（斜口钳、M2 螺丝刀）
 3. 有一个干净的工作台
 
 ## 组装步骤
@@ -167,6 +167,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 ## 常见问题
 
 1. **舵机不转动**
+
    - 重新启动
    - 检查接线是否正确
    - 确认电源供应正常

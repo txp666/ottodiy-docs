@@ -108,6 +108,11 @@ const config = {
             label: '组装教程',
           },
           {
+            to: '/docs/usage',
+            position: 'left',
+            label: '使用说明',
+          },
+          {
             href: 'https://github.com/txp666/ottodiy-docs',
             label: 'GitHub',
             position: 'right',

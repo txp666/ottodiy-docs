@@ -44,6 +44,11 @@ const sidebars = {
     },
     {
       type: 'doc',
+      id: 'usage',
+      label: '使用说明',
+    },
+    {
+      type: 'doc',
       id: 'faq',
       label: '常见问题',
     },

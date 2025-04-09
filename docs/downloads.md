@@ -4,6 +4,8 @@ title: 程序烧录
 sidebar_position: 3
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # 程序烧录
 
 在这里，您可以找到 Otto DIY 机器人相关的所有程序文件和源代码链接。
@@ -15,6 +17,7 @@ sidebar_position: 3
 - **GitHub 仓库**：[小智 ESP32 AI 机器人源码](https://github.com/78/xiaozhi-esp32)
 - **功能**：包含 Wi-Fi 连接、语音识别、AI 对话等全部功能
 - **适用**：对开发和定制有兴趣的用户
+- **固件下载**：<a href={useBaseUrl('/files/xiaozhi.bin')} download>小智 ESP32 AI 机器人固件</a>
 
 ### 原版 Arduino 源代码
 

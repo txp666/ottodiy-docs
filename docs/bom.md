@@ -32,7 +32,7 @@ sidebar_position: 2
 | 腿部 | Otto_leg.stl  | 2    | PLA /树脂 |
 | 脚部 | Otto_foot.stl | 2    | PLA /树脂 |
 
-> [点击下载完整的 STL 文件包](/files/otto-stl-files.zip)
+> [点击下载打印模型](https://makerworld.com.cn/zh/models/1117966-ottorobot-xiao-zhi-ai#profileId-1171069)
 
 ## 总预算估计
 

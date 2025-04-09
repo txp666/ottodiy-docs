@@ -17,7 +17,6 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 - **GitHub 仓库**：[小智 ESP32 AI 机器人源码](https://github.com/78/xiaozhi-esp32)
 - **功能**：包含 Wi-Fi 连接、语音识别、AI 对话等全部功能
 - **适用**：对开发和定制有兴趣的用户
-- **固件下载**：<a href={useBaseUrl('/files/xiaozhi.bin')} download>小智 ESP32 AI 机器人固件</a>
 
 ### 原版 Arduino 源代码
 
@@ -29,8 +28,9 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ### ESP32+AI 版本固件
 
-| 版本 | 发布日期 | 功能描述 | 下载链接 |
-| ---- | -------- | -------- | -------- |
+| 版本 | 发布日期 | 功能描述                             | 下载链接                  |
+| ---- | -------- | ------------------------------------ | ------------------------- |
+| v1.0 | 2025-4-9 | 初始版本，包含基本动作和语音控制功能 | [1.0](/files/xiaozhi.bin) |
 
 ### 烧录工具
 

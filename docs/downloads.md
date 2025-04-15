@@ -14,7 +14,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ### ESP32+AI 版本源代码
 
-- **GitHub 仓库**：[小智 ESP32 AI 机器人源码](https://github.com/78/xiaozhi-esp32)
+- **GitHub 仓库**：[小智 ESP32 AI 机器人源码](https://github.com/txp666/xiaozhi-esp32)
 - **功能**：包含 Wi-Fi 连接、语音识别、AI 对话等全部功能
 - **适用**：对开发和定制有兴趣的用户
 

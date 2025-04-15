@@ -41,6 +41,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## 烧录指南
 
+**烧录前确保电池已经安装**
+
 1. 下载最新版本的固件文件（.bin）
 2. 下载并安装烧录工具
 3. 将 Otto 通过 USB 连接到电脑（注意，如果 ESP32 是第一次烧录程序，上电前需要按住 BOOT 按钮）

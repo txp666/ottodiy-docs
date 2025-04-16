@@ -87,21 +87,21 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## 五、支持动作
 
-| 动作类型      | 编号 | 描述            | 参数                                                                                 |
-| ------------- | ---- | --------------- | ------------------------------------------------------------------------------------ |
-| Walk          | 1    | 行走            | steps: 步数<br>speed: 速度 (越小越快 500-3000)<br>direction: 方向 (1=前进, -1=后退)  |
-| Turn          | 2    | 转向            | steps: 步数<br>speed: 速度 <br>direction: 方向 (1=左转, -1=右转)                     |
-| Jump          | 3    | 跳跃            | steps: 步数<br>speed: 速度                                                           |
-| Swing         | 4    | 摇摆            | steps: 步数<br>speed: 速度 <br>amount: 幅度 (10-50)                                  |
-| Moonwalk      | 5    | 太空步          | steps: 步数<br>speed: 速度 <br>amount: 幅度 (15-40)<br>direction: 方向 (1=左, -1=右) |
-| Bend          | 6    | 弯曲            | steps: 步数<br>speed: 速度 <br>direction: 方向 (1=左, -1=右)                         |
-| ShakeLeg      | 7    | 抖腿            | steps: 步数<br>speed: 速度 <br>direction: 方向 (1=左腿, -1=右腿)                     |
-| UpDown        | 8    | 上下运动        | steps: 步数<br>speed: 速度 <br>amount: 幅度 (10-90)                                  |
-| TiptoeSwing   | 9    | 脚尖摇摆        | steps: 步数<br>speed: 速度 <br>amount: 幅度 (10-50)                                  |
-| Jitter        | 10   | 抖动            | steps: 步数<br>speed: 速度 <br>amount: 幅度 (5-25)                                   |
-| AscendingTurn | 11   | 上升转弯        | steps: 步数<br>speed: 速度 <br>amount: 幅度 (5-15)                                   |
-| Crusaito      | 12   | 十字步/混合步态 | steps: 步数<br>speed: 速度 <br>amount: 幅度 (20-50)<br>direction: 方向 (1=左, -1=右) |
-| Flapping      | 13   | 拍打动作        | steps: 步数<br>speed: 速度 <br>amount: 幅度 (10-30)<br>direction: 方向 (1=前, -1=后) |
+| 动作类型      | 编号 | 描述            | 参数                                                                                       |
+| ------------- | ---- | --------------- | ------------------------------------------------------------------------------------------ |
+| Walk          | 1    | 行走            | steps: 步数<br />speed: 速度 (越小越快 500-3000)<br />direction: 方向 (1=前进, -1=后退)    |
+| Turn          | 2    | 转向            | steps: 步数<br />speed: 速度 <br />direction: 方向 (1=左转, -1=右转)                       |
+| Jump          | 3    | 跳跃            | steps: 步数<br />speed: 速度                                                               |
+| Swing         | 4    | 摇摆            | steps: 步数<br />speed: 速度 <br />amount: 幅度 (10-50)                                    |
+| Moonwalk      | 5    | 太空步          | steps: 步数<br />speed: 速度 <br />amount: 幅度 (15-40)<br />direction: 方向 (1=左, -1=右) |
+| Bend          | 6    | 弯曲            | steps: 步数<br />speed: 速度 <br />direction: 方向 (1=左, -1=右)                           |
+| ShakeLeg      | 7    | 抖腿            | steps: 步数<br />speed: 速度 <br />direction: 方向 (1=左腿, -1=右腿)                       |
+| UpDown        | 8    | 上下运动        | steps: 步数<br />speed: 速度 <br />amount: 幅度 (10-90)                                    |
+| TiptoeSwing   | 9    | 脚尖摇摆        | steps: 步数<br />speed: 速度 <br />amount: 幅度 (10-50)                                    |
+| Jitter        | 10   | 抖动            | steps: 步数<br />speed: 速度 <br />amount: 幅度 (5-25)                                     |
+| AscendingTurn | 11   | 上升转弯        | steps: 步数<br />speed: 速度 <br />amount: 幅度 (5-15)                                     |
+| Crusaito      | 12   | 十字步/混合步态 | steps: 步数<br />speed: 速度 <br />amount: 幅度 (20-50)<br />direction: 方向 (1=左, -1=右) |
+| Flapping      | 13   | 拍打动作        | steps: 步数<br />speed: 速度 <br />amount: 幅度 (10-30)<br />direction: 方向 (1=前, -1=后) |
 
 ## 常见问题
 

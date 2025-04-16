@@ -44,6 +44,8 @@ sidebar_position: 2
 
 > [点击下载打印模型](https://makerworld.com.cn/zh/models/1117966-ottorobot-xiao-zhi-ai#profileId-1171069)
 
+**全部文件点击下载 STL/CAD 文件，3MF 不全**
+
 ## 总预算估计
 
 Otto DIY 机器人的总成本大约在 ¥200-¥500 之间，具体取决于购买渠道和组件质量。如果你已经有一些组件或工具，成本可能会更低。

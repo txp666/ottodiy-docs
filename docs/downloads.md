@@ -6,6 +6,10 @@ sidebar_position: 3
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+export const ImgWithBaseUrl = ({src, alt, width}) => (
+<img src={useBaseUrl(src)} alt={alt} width={width ? width : undefined} />
+);
+
 # 程序烧录
 
 在这里，您可以找到 Otto DIY 机器人相关的所有程序文件和源代码链接。
@@ -53,6 +57,14 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
    - 选择下载的固件文件
 6. 点击"开始"进行烧录
 7. 烧录完成后，重启主板
+<p align="center">
+  <ImgWithBaseUrl src="/img/download1.png" alt="download1" />
+  <div align="center"><em>图1：选择ESP32S3,串口</em></div>
+</p>
+<p align="center">
+  <ImgWithBaseUrl src="/img/download2.png" alt="download2" />
+  <div align="center"><em>图2：选择程序，COM,开始下载</em></div>
+</p>
 
 ## 常见问题解答
 

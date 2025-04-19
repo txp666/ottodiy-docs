@@ -23,6 +23,7 @@ sidebar_position: 2
 | 麦克风       | [INMP441](https://item.taobao.com/item.htm?_u=f20q7cgba804&id=608292096518&pisk=gkruOC9i4zu7Ds5xkoi5SYAmzy7AF0iQYWKK9DhFujlfdULRF2kUKWqLyJlKxWV3tb3FN0E3iRwdFkBS4MDU6SmLebhLi9V8dHC5R0Ket7wNN8hdFkcEi7PnRTGKTXVLLzBAXGe7FDiET1IOX_ODkCPkavoFLnksCtHPhzSU7DiF66YvY4siA5_OAddyuxljKv8yzWo43AHIYY-ETtcqKATeaWPFnxknEHlezbR2uvh28X-E8iuqdYYez4-FnqljUYoEYWoVnvMsKHlgYoZVGXWQScil_rDorfyra8ez0ZgBPJc0-yEoE-X8FjDxHoDorfubi6oa4SeU2ugfuEmQHPV38W_9l02Uz0kTFgxmb8zYxxEdpeczHo24q49Mj5mutVrrop-nVDcSmxrNpFGYmbFUqqW9j2n4XVozkZ1-J0DgTuNkKHPaHRESlkfMgXa-CmkTFgxmb8kF4I827d09AxWL0eTIzxMm6ffgtuimSlVGntY1P4kje1BcneTIzxMR6tXD5QgrhYCO.&spm=a1z09.2.0.0.6f472e8dGGusZP&skuId=4839463046479)                                                                                                                                                               |
 
 **DHT11 暂时不需要。**
+**AMS1117 按照 Bom 型号（美森科）压差 1.4V@(1A)，建议在立创下单，淘宝搜到可能压差会比较大，或者向店铺确认压差 尽量不大于 1.4V@(1A)。**
 
 **除了 boot 按键（按淘宝 6mm 高度）， 其余立创匹配好的元件均可在立创一键下单，未匹配部分按上面淘宝链接。**
 

@@ -58,6 +58,11 @@ export default function Home() {
                   了解更多
                 </Link>
                 <Link
+                  className="button button--secondary button--lg margin-right--md"
+                  to="/docs/pcb-order">
+                  PCB下单
+                </Link>
+                <Link
                   className="button button--secondary button--lg"
                   to="/docs/bom">
                   查看零部件清单

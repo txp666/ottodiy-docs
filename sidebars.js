@@ -29,6 +29,11 @@ const sidebars = {
     },
     {
       type: 'doc',
+      id: 'pcb-order',
+      label: 'PCB下单',
+    },
+    {
+      type: 'doc',
       id: 'bom',
       label: '零部件清单',
     },

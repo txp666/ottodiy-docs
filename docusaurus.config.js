@@ -93,6 +93,11 @@ const config = {
             label: '开始制作',
           },
           {
+            to: '/docs/pcb-order', 
+            position: 'left',
+            label: 'PCB下单',
+          },
+          {
             to: '/docs/bom', 
             position: 'left',
             label: 'Bom清单',

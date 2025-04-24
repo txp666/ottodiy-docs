@@ -1,7 +1,7 @@
 ---
 id: downloads
 title: 程序烧录
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -35,7 +35,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 | 版本 | 发布日期  | 功能描述                              | 下载链接                       |
 | ---- | --------- | ------------------------------------- | ------------------------------ |
 | v1.0 | 2025-4-9  | 初始版本，包含基本动作和语音控制功能  | 1.0                            |
-| v1.1 | 2025-4-23 | 更新到小智 1.6.0，另修复突然“瘫痪”bug | [1.1](/files/merged-flash.bin) |
+| v1.1 | 2025-4-23 | 更新到小智 1.6.0，另修复突然"瘫痪"bug | [1.1](/files/merged-flash.bin) |
 
 ### 烧录工具
 

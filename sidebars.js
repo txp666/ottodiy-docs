@@ -39,6 +39,11 @@ const sidebars = {
     },
     {
       type: 'doc',
+      id: 'soldering-guide',
+      label: '焊接指南',
+    },
+    {
+      type: 'doc',
       id: 'downloads',
       label: '程序下载',
     },

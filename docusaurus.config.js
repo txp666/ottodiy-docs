@@ -103,6 +103,11 @@ const config = {
             label: 'Bom清单',
           },
           {
+            to: '/docs/soldering-guide', 
+            position: 'left',
+            label: '焊接指南',
+          },
+          {
             to: '/docs/downloads',
             position: 'left',
             label: '程序下载',

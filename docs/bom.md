@@ -46,7 +46,7 @@ sidebar_position: 3
 
 > [点击下载打印模型](https://makerworld.com.cn/zh/models/1117966-ottorobot-xiao-zhi-ai#profileId-1171069)
 
-**全部文件点击下载 STL/CAD 文件，3MF 不全**
+**全部文件点击下载 STL/CAD 文件，3MF 不全，打印最新版就可以了，body 分有没有手臂两个版本，手和腿都用 leg，带手的需要打印 leg4 个+2 个 grip，不带手的 leg 打 2 个**
 
 ## 总预算估计
 

@@ -38,6 +38,8 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 | v1.1 | 2025-4-23 | 更新到小智 1.6.0，另修复突然"瘫痪"bug | 1.1                            |
 | v1.2 | 2025-4-26 | 增加手臂功能代码                      | [1.2](/files/merged-flash.bin) |
 
+**下载最新固件即可，兼容所有版本电路板**
+
 ### 烧录工具
 
 - **ESP32 Flash Download Tool**：[下载链接](https://www.espressif.com.cn/sites/default/files/tools/flash_download_tool_3.9.5.zip)

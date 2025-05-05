@@ -6,6 +6,10 @@ sidebar_position: 5
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
+export const ImgWithBaseUrl = ({src, alt, width}) => (
+<img src={useBaseUrl(src)} alt={alt} width={width ? width : undefined} />
+);
+
 # 使用说明
 
 ## 一、开始使用
@@ -149,3 +153,11 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 3. 开始自定义开发
 
 如果遇到任何问题，请查看我们的[常见问题解答](/docs/faq)或联系技术支持。
+
+## 如果本站内容对您有用，请作者喝杯奶茶吧
+
+<div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
+  <div style={{width: '48%', textAlign: 'center'}}>
+    <ImgWithBaseUrl src="/img/alipay.jpg" alt="" />
+  </div>
+</div>

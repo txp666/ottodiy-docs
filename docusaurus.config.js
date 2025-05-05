@@ -149,8 +149,8 @@ const config = {
                 href: 'https://b23.tv/7BLN9j1',
               },
               {
-                label: 'QQ群(暂无）',
-                href: '#',
+                label: 'QQ群',
+                href: 'https://qm.qq.com/q/lvXglQWimm',
               },
             ],
           },
@@ -163,7 +163,7 @@ const config = {
               },
               {
                 label: 'GitHub 小智',
-                href: 'https://github.com/78/xiaozhi-esp32',
+                href: 'https://github.com/txp666/xiaozhi-esp32',
               },
             ],
           },

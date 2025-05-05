@@ -8,9 +8,9 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 <img src={useBaseUrl(src)} alt={alt} width={width ? width : undefined} />
 );
 
-# 模块板焊接指南
+# 焊接指南
 
-## 关键
+## 模块板关键
 
 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
   <div style={{width: '48%', textAlign: 'center'}}>
@@ -44,6 +44,24 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
     <div><em>6</em></div>
   </div>
 </div>
+
+## 非模块板
+
+<div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
+  <div style={{width: '48%', textAlign: 'center'}}>
+    <ImgWithBaseUrl src="/img/Soldering/7.png" alt="7" />
+    <div><em>7</em></div>
+  </div>
+  <div style={{width: '48%', textAlign: 'center'}}>
+    <ImgWithBaseUrl src="/img/Soldering/8.png" alt="8" />
+    <div><em>8</em></div>
+  </div>
+</div>
+
+- **麦克风**：第 3 引脚 GND 一圈必须焊好，否则发热不稳定，易烧坏。同时不要长时间用风枪吹，先在焊盘上锡，吹化以后迅速放上麦克风
+- **功放**：注意方向 +号对应右上角白点
+- **ESP32**：底部焊盘最好焊上，涂点锡膏，放在加热台，或者热风枪吹
+- **led**：左侧为负极，led 绿色竖线朝左，或者看底部三角形，尖尖朝左，该灯为充电指示灯，不插电池会微微亮
 
 ## 所需工具
 

@@ -57,18 +57,18 @@ esptool.py --chip esp32s3 merge_bin -o merged-flash.bin --flash_mode dio --flash
 
 ## 烧录指南
 
-**烧录前确保电池已经安装**
+<span style={{color: 'red'}}><strong>烧录前确保电池已经安装！！！！！！！！！！！</strong></span>
 
 1. 下载最新版本的固件文件（.bin）
 2. 下载并安装烧录工具
-3. 将 Otto 通过 USB 连接到电脑（注意，如果 ESP32 是第一次烧录程序，上电前需要按住 BOOT 按钮）
+3. 将 Otto 通过 USB 连接到电脑（<span style={{color: 'red'}}><strong>注意，如果 ESP32 是第一次烧录程序，打开开关前需要按住 BOOT 按钮！！！！！！！！</strong></span>）
 4. 启动烧录工具，选择正确的 COM 端口
 5. 按照以下参数设置烧录：
    - 波特率：921600
    - 烧录地址：0x0
    - 选择下载的固件文件
 6. 点击"开始"进行烧录
-7. 烧录完成后，重启主板
+7. <span style={{color: 'red'}}><strong>烧录完成后，重启主板！！！！！！！</strong></span>
 <p align="center">
   <ImgWithBaseUrl src="/img/download1.png" alt="download1" />
   <div align="center"><em>图1：选择ESP32S3,串口</em></div>

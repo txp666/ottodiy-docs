@@ -127,6 +127,11 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          {
+            href: 'https://mall.bilibili.com/neul-next/detailuniversal/detail.html?isMerchant=1&page=detailuniversal_detail&saleType=0&itemsId=12334257&loadingShow=1&noTitleBar=1&msource=merchant_share',
+            label: '购买套件',
+            position: 'right',
+          },
         ],
       },
       footer: {
@@ -158,8 +163,8 @@ const config = {
             title: '更多',
             items: [
               {
-                label: '项目分享',
-                to: '/blog',
+                label: '店铺',
+                href: 'https://mall.bilibili.com/neul-next/index.html?page=up-store_home&noTitleBar=1&msource=shop_share&merchantId=10624032&share_source=&share_medium=android&bbid=EB6B5C19-D944-6898-9668-A75A1D8313A713936infoc&ts=1746514066719',
               },
               {
                 label: 'GitHub 小智',

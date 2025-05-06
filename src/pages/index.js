@@ -62,6 +62,11 @@ export default function Home() {
                   to="/docs/bom">
                   查看零部件清单
                 </Link>
+                <Link
+                  className="button button--warning button--lg"
+                  to="https://mall.bilibili.com/neul-next/detailuniversal/detail.html?isMerchant=1&page=detailuniversal_detail&saleType=0&itemsId=12334257&loadingShow=1&noTitleBar=1&msource=merchant_share">
+                  购买套件
+                </Link>
               </div>
             </div>
             <div className="col col--6">

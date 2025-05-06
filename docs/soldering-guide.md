@@ -10,6 +10,16 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 # 焊接指南
 
+## 焊接辅助工具
+
+  <div style={{width: '100%', textAlign: 'center'}}>
+    <ImgWithBaseUrl src="/img/Soldering/9.png" alt="9" />
+    <div><em>9</em></div>
+  </div>
+  <div style={{width: '100%', textAlign: 'center'}}>
+    <ImgWithBaseUrl src="/img/Soldering/10.png" alt="10" />
+    <div><em>10</em></div>
+  </div>
 ## 模块板关键
 
 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>

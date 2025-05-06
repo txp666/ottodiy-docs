@@ -57,6 +57,6 @@ Otto DIY 机器人的总成本大约在 ¥200-¥500 之间，具体取决于购�
 
 1. **套件购买**：对于初学者，可以考虑购买完整的 Otto DIY 套件，包含所有所需组件。
 
-   - [Otto DIY 基础套件 b 站工坊链接](https://mall.bilibili.com/neul-next/detailuniversal/detail.html?isMerchant=1&page=detailuniversal_detail&saleType=0&itemsId=12334257&loadingShow=1&noTitleBar=1&msource=merchant_share)
+   - [Otto DIY 基础套件 b 站工坊链接](https://mall.bilibili.com/neul-next/detailuniversal/detail.html?isMerchant=1&page=detailuniversal_detail&saleType=0&itemsId=12340590&loadingShow=1&noTitleBar=1&msource=merchant_share)
 
 2. **分开购买**：如果你想自行采购，可以使用上面提供的参考链接。

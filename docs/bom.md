@@ -44,6 +44,7 @@ sidebar_position: 3
 | v1.0 | 2025-4-9  | 初始版本                                                           |
 | v1.1 | 2025-4-16 | 增加 head-2828 喇叭带天线                                          |
 | v1.2 | 2025-4-26 | body 适配 2828 喇叭、适配 18650 电池、手臂优化、后续仅更新圆角版本 |
+| v1.3 | 2025-4-26 | 减小 leg 长度，防止手臂卡线；修改 body，屏幕更好装                 |
 
 > [点击下载打印模型](https://makerworld.com.cn/zh/models/1117966-ottorobot-xiao-zhi-ai#profileId-1171069)
 

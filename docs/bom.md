@@ -63,5 +63,6 @@ Otto DIY 机器人的总成本大约在 ¥200-¥500 之间，具体取决于购�
 2. **成品授权店铺**：成品购买，到手即用
 
    - [特能拉科技](https://item.taobao.com/item.htm?id=919684576480&pisk=gniSAycT__fWZQZddzv4C1AEBzErdK-wP9wKIvIPpuE899GxpgILwyHYkRyG2yFerXaITj4K4ukrGTmj1MSyZUDdAkrB_C-wbYDYxkdaIk0g8T2UQJBRT8EYMkyQmLH1uYDuxkBV9FuxE9NuSBW8pWpbDJwd2kULe-pbLJw8v7UdMZeTMkELyyUYk8289WULeKtYL8_d9WeRMZegeWELvXHvhJVYekEKZqB_dUNoFL4vjtNeczM8GMIK2H471TV0n-nXUzVie0sdvw27P5H8iQKKzDaxKyihKMaIeVc3BbCJ_zDKljw7An78XxgK1-mJb_wmzxh3MA6CjYE7dPELl9IKhu30k0r9XswmkYuKqb6Cv8mrbyNglpI38onaWVh5KdDY2Jh3SDRGq7HKIc0afn78XxgK12sPNGP6OAQC-7IQh5JXhwb3O90n2aT6Ida8n8a2hK1--ze0h5JXh_33y-27gK9fw2f..&skuId=5955601694653&spm=a21xtw.29178619.0.0)
+   - [小智科技小制作](https://item.taobao.com/item.htm?ft=t&id=933899243652&spm=a21dvs.24047116.0.0.52d2645eeWocKd&skuId=5992935887786)
 
 3. **分开购买**：如果你想自行采购，可以使用上面提供的参考链接。

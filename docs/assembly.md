@@ -12,6 +12,20 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 # 组装教程
 
+## 视频
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%', background: '#000'}}>
+  <iframe 
+    src="//player.bilibili.com/player.html?isOutside=true&aid=114563085500433&bvid=BV1dyjhzzExr&cid=30130244949&p=1" 
+    scrolling="no" 
+    border="0" 
+    frameborder="no" 
+    framespacing="0" 
+    allowfullscreen="true"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+  />
+</div>
+
 ## 准备工作
 
 在开始组装之前，请确保您已经：

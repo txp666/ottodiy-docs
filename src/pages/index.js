@@ -69,7 +69,7 @@ export default function Home() {
                 </Link>
                 <Link
                   className="button button--warning button--lg"
-                  to="https://mall.bilibili.com/neul-next/detailuniversal/detail.html?isMerchant=1&page=detailuniversal_detail&saleType=0&itemsId=12340590&loadingShow=1&noTitleBar=1&msource=merchant_share">
+                  to="https://item.taobao.com/item.htm?id=919684576480&pisk=gniSAycT__fWZQZddzv4C1AEBzErdK-wP9wKIvIPpuE899GxpgILwyHYkRyG2yFerXaITj4K4ukrGTmj1MSyZUDdAkrB_C-wbYDYxkdaIk0g8T2UQJBRT8EYMkyQmLH1uYDuxkBV9FuxE9NuSBW8pWpbDJwd2kULe-pbLJw8v7UdMZeTMkELyyUYk8289WULeKtYL8_d9WeRMZegeWELvXHvhJVYekEKZqB_dUNoFL4vjtNeczM8GMIK2H471TV0n-nXUzVie0sdvw27P5H8iQKKzDaxKyihKMaIeVc3BbCJ_zDKljw7An78XxgK1-mJb_wmzxh3MA6CjYE7dPELl9IKhu30k0r9XswmkYuKqb6Cv8mrbyNglpI38onaWVh5KdDY2Jh3SDRGq7HKIc0afn78XxgK12sPNGP6OAQC-7IQh5JXhwb3O90n2aT6Ida8n8a2hK1--ze0h5JXh_33y-27gK9fw2f..&skuId=5955601694653&spm=a21xtw.29178619.0.0">
                   购买套件
                 </Link>
               </div>

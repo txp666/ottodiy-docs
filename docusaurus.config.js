@@ -10,8 +10,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'OttoDIY机器人',
-  tagline: '开源otto机器人技术文档与分享',
+  title: '桌面AI人形机器人开源生态',
+  tagline: '技术文档与分享',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -80,7 +80,7 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'OttoDIY',
+        title: '闪猫科技Tenengla™️',
         logo: {
           alt: 'OttoDIY Logo',
           src: 'img/favicon.ico',

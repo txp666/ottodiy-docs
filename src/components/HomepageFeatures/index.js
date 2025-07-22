@@ -8,7 +8,7 @@ const FeatureList = [
     imgSrc: require('@site/static/img/ottoRobot3.png').default,
     description: (
       <>
-        Otto机器人设计简洁，使用常见的Arduino组件，非常适合初学者入门。
+        AI桌面机器人设计简洁，使用常见的组件，非常适合初学者入门。
         即使没有电子或编程基础，也能快速完成制作。
       </>
     ),
@@ -18,7 +18,7 @@ const FeatureList = [
     imgSrc: require('@site/static/img/ottoRobot2.png').default,
     description: (
       <>
-        作为完全开源项目，Otto机器人支持自由修改和扩展。你可以添加传感器、
+        作为完全开源项目，该机器人支持自由修改和扩展。你可以添加传感器、
         更改外观或开发新功能，打造专属机器人。
       </>
     ),
@@ -28,7 +28,7 @@ const FeatureList = [
     imgSrc: require('@site/static/img/ottoRobot4.png').default,
     description: (
       <>
-        Otto机器人融合了机械、电子、编程和3D打印等多学科知识，
+        该机器人融合了机械、电子、编程和3D打印等多学科知识，
         是激发学生创造力和培养解决问题能力的理想教具。
       </>
     ),
@@ -54,7 +54,7 @@ export default function HomepageFeatures() {
     <section className={styles.features}>
       <div className="container">
         <Heading as="h2" className={styles.featuresTitle}>
-          Otto机器人的特点
+         AI桌面机器人的特点
         </Heading>
         <div className="row">
           {FeatureList.map((props, idx) => (

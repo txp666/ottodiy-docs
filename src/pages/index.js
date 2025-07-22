@@ -46,7 +46,6 @@ export default function Home() {
             <div className="col col--6">
               <Heading as="h2">认识闪猫科技TenenglaAI桌面人形机器人</Heading>
               <p>
-                闪猫科技TenenglaAI桌面人形机器人灵感来源于由 Camilo Parra Palacio 于 2016 年创建的Otto DIY开源项目，
                 闪猫科技研发团队结合3D打印与用通电子元件创造万物的理念，让小白用户也可以超低成本仅需30分钟即可手搓一专个属桌面AI机器人！
                 通过云端一体的架构给予了桌面机器人AI语音对话、AI动作反馈、AI视觉系统等能力，产品深融度合了感情陪伴、创客教育、3D打印、AI大模型、
                 具身智能、智能家等居多元场景，并支持一键入接闪猫科技AI、小智AI、涂鸦智能、火山引擎等主流AI服务，是一个AI桌面机器人的智能生态硬件平台。

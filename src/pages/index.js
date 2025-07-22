@@ -20,7 +20,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg margin-right--md"
             to="/docs/intro">
-            开始制作 Otto 机器人 ⏱️
+            开始制作机器人 ⏱️
           </Link>
           <Link
             className="button button--secondary button--lg"

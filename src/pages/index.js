@@ -46,10 +46,16 @@ export default function Home() {
             <div className="col col--6">
               <Heading as="h2">认识闪猫科技TenenglaAI桌面人形机器人</Heading>
               <p>
-               闪猫科技TenenglaAI桌面人形机器人灵感来源于由 Camilo Parra Palacio 于 2016 年创建的Otto DIY开源项目，闪猫科技研发团队通过自研端侧算法、外观设计、机械结构等，结合3D打印与用通电子元件创造万物的理念，让小白用户也可以超低成本仅需30分钟即可手搓一专个属桌面AI机器人！通过云端一体的架构给予了桌面机器人AI语音对话、AI动作反馈、AI视觉系统等能力，产品深融度合了感情陪伴、创客教育、3D打印、AI大模型、具身智能、智能家等居多元场景，并支持一键入接闪猫科技AI、小智AI、涂鸦智能、火山引擎等主流AI服务，是一个AI桌面机器人的智能生态硬件平台。
+                闪猫科技TenenglaAI桌面人形机器人灵感来源于由 Camilo Parra Palacio 于 2016 年创建的Otto DIY开源项目，
+                闪猫科技研发团队结合3D打印与用通电子元件创造万物的理念，让小白用户也可以超低成本仅需30分钟即可手搓一专个属桌面AI机器人！
+                通过云端一体的架构给予了桌面机器人AI语音对话、AI动作反馈、AI视觉系统等能力，产品深融度合了感情陪伴、创客教育、3D打印、AI大模型、
+                具身智能、智能家等居多元场景，并支持一键入接闪猫科技AI、小智AI、涂鸦智能、火山引擎等主流AI服务，是一个AI桌面机器人的智能生态硬件平台。
+                通过本网站，您可以学习如何制作、编程和扩展 自己的桌面机器人。
               </p>
               <p>
-                本网站目前仅分享由<a href="https://b23.tv/rli7Olc" target="_blank" rel="noopener noreferrer">闪猫科技-乔丹</a>撰写的ESP32版+AI小智 的 Otto机器人 的制作文档
+                本网站目前仅分享由<a href="https://b23.tv/tr2PUDs" target="_blank" rel="noopener noreferrer">闪猫科技-小鹏</a>
+                和<a href="https://b23.tv/rli7Olc" target="_blank" rel="noopener noreferrer">闪猫科技-乔丹</a>
+                撰写的桌面AI机器人的制作文档
               </p>
               <div className={styles.buttons}>
                 <Link

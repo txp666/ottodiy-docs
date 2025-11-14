@@ -13,6 +13,9 @@ const config = {
   title: '桌面AI人形机器人开源生态',
   tagline: '技术文档与分享',
   favicon: 'img/favicon.ico',
+  
+  // These will be used as fallback when translations are not available
+  // Translations are managed in i18n/{locale}/code.json
 
   // Set the production url of your site here
   url: 'https://ottodiy.tech',
@@ -34,6 +37,19 @@ const config = {
   i18n: {
     defaultLocale: 'zh-Hans',
     locales: ['zh-Hans', 'en'],
+    localeConfigs: {
+      'zh-Hans': {
+        label: '中文',
+        direction: 'ltr',
+        htmlLang: 'zh-Hans',
+      },
+      en: {
+        label: 'English',
+        direction: 'ltr',
+        htmlLang: 'en-US',
+        path: 'en',
+      },
+    },
   },
 
   presets: [
@@ -130,6 +146,10 @@ const config = {
           {
             href: 'https://mall.bilibili.com/neul-next/detailuniversal/detail.html?isMerchant=1&page=detailuniversal_detail&saleType=0&itemsId=12340590&loadingShow=1&noTitleBar=1&msource=merchant_share',
             label: '购买套件',
+            position: 'right',
+          },
+          {
+            type: 'localeDropdown',
             position: 'right',
           },
         ],

@@ -1,0 +1,42 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.doc.项目介绍": {
+    "message": "Project Introduction",
+    "description": "The label for the doc item 项目介绍 in sidebar tutorialSidebar, linking to the doc intro"
+  },
+  "sidebar.tutorialSidebar.doc.入门指南": {
+    "message": "Getting Started",
+    "description": "The label for the doc item 入门指南 in sidebar tutorialSidebar, linking to the doc getting-started"
+  },
+  "sidebar.tutorialSidebar.doc.PCB下单": {
+    "message": "Order PCB",
+    "description": "The label for the doc item PCB下单 in sidebar tutorialSidebar, linking to the doc pcb-order"
+  },
+  "sidebar.tutorialSidebar.doc.零部件清单": {
+    "message": "Bill of Materials",
+    "description": "The label for the doc item 零部件清单 in sidebar tutorialSidebar, linking to the doc bom"
+  },
+  "sidebar.tutorialSidebar.doc.焊接指南": {
+    "message": "Soldering Guide",
+    "description": "The label for the doc item 焊接指南 in sidebar tutorialSidebar, linking to the doc soldering-guide"
+  },
+  "sidebar.tutorialSidebar.doc.程序下载": {
+    "message": "Downloads",
+    "description": "The label for the doc item 程序下载 in sidebar tutorialSidebar, linking to the doc downloads"
+  },
+  "sidebar.tutorialSidebar.doc.组装教程": {
+    "message": "Assembly Guide",
+    "description": "The label for the doc item 组装教程 in sidebar tutorialSidebar, linking to the doc assembly"
+  },
+  "sidebar.tutorialSidebar.doc.使用说明": {
+    "message": "User Manual",
+    "description": "The label for the doc item 使用说明 in sidebar tutorialSidebar, linking to the doc usage"
+  },
+  "sidebar.tutorialSidebar.doc.常见问题": {
+    "message": "FAQ",
+    "description": "The label for the doc item 常见问题 in sidebar tutorialSidebar, linking to the doc faq"
+  }
+}

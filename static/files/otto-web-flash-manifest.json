@@ -1,0 +1,16 @@
+{
+  "name": "Otto DIY ESP32+AI",
+  "version": "2.2.6",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        {
+          "path": "otto2.2.6.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

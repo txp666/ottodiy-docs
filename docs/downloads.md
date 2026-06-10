@@ -5,6 +5,7 @@ sidebar_position: 5
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import FirmwareFlasher from '@site/src/components/FirmwareFlasher';
 
 export const ImgWithBaseUrl = ({src, alt, width}) => (
 <img src={useBaseUrl(src)} alt={alt} width={width ? width : undefined} />
@@ -13,6 +14,8 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 # 程序烧录
 
 在这里，您可以找到 Otto DIY 机器人相关的所有程序文件和源代码链接。
+
+<FirmwareFlasher firmwareVersion="v2.2.6" />
 
 ## 源代码仓库
 

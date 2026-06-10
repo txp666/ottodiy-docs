@@ -5,6 +5,7 @@ sidebar_position: 5
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import FirmwareFlasher from '@site/src/components/FirmwareFlasher';
 
 export const ImgWithBaseUrl = ({src, alt, width}) => (
 <img src={useBaseUrl(src)} alt={alt} width={width ? width : undefined} />
@@ -13,6 +14,8 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 # Firmware Flashing
 
 Here you can find all program files and source code links related to the Otto DIY robot.
+
+<FirmwareFlasher locale="en" firmwareVersion="v2.2.6" />
 
 ## Source Code Repositories
 
@@ -34,6 +37,7 @@ Here you can find all program files and source code links related to the Otto DI
 
 | Version  | Release Date | Feature Description                                                                                                                                                                          | Download Link                     |
 | -------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| v2.2.6   | 2026-5-18    | Optimized Otto action ending and adaptive homing smoothness; fixed WebSocket direct connections not receiving MCP responses; improved Otto camera backend initialization stability            | [2.2.6](/files/otto2.2.6.bin)     |
 | v2.0.5   | 2025-12-8    | Updated battery lower limit, battery level not updated during actions                                                                                                                        | [2.0.5](/files/otto2.0.5.bin)     |
 | v2.0.4-2 | 2025-11-17   | Added WeChat Mini Program control/calibration/customization features                                                                                                                         | [2.0.4-2](/files/otto2.0.4-2.bin) |
 | v2.0.4   | 2025-10-31   | Updated to Xiaozhi 2.0.4 with added fixed actions and AI custom programmed actions, see MCP tools in [User Manual](/docs/usage#五动作) for details                                           | [2.0.4](/files/otto2.0.4.bin)     |

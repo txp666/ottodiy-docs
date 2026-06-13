@@ -1,0 +1,213 @@
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px 40px;
+  --line: var(--ifm-color-emphasis-200);
+  --panel: var(--ifm-background-surface-color);
+}
+
+.warn {
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  color: #7a4f01;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+[data-theme='dark'] .warn { background: #3a2f12; border-color: #6b5418; color: #ffd591; }
+.warn code { background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 4px; }
+
+/* ===== 顶部连接栏 ===== */
+.topbar {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.connRow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+.dotGray { background: #9aa0a6; }
+.dotYellow { background: #f5a623; animation: pulse 1s infinite; }
+.dotGreen { background: #36b37e; }
+.dotRed { background: #e5484d; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.connLabel { font-weight: 600; font-size: 14px; min-width: 56px; }
+.ipInput {
+  flex: 1; min-width: 180px;
+  padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base); font-size: 14px;
+}
+.fw { font-size: 12px; color: var(--ifm-color-emphasis-700); background: var(--ifm-color-emphasis-100); padding: 4px 8px; border-radius: 6px; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--ifm-color-emphasis-600); }
+.hint code, .topbar code { font-size: 11px; }
+
+/* ===== 按钮 ===== */
+.btnPrimary, .btnGhost, .btnDanger, .btnGhostSm {
+  border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+  padding: 8px 16px; transition: all .15s ease; white-space: nowrap;
+}
+.btnPrimary { background: var(--ifm-color-primary); color: #fff; }
+.btnPrimary:hover:not(:disabled) { filter: brightness(1.08); }
+.btnDanger { background: #e5484d; color: #fff; }
+.btnDanger:hover:not(:disabled) { filter: brightness(1.08); }
+.btnGhost { background: var(--ifm-color-emphasis-100); color: var(--ifm-font-color-base); }
+.btnGhost:hover:not(:disabled) { background: var(--ifm-color-emphasis-200); }
+.btnGhostSm { background: var(--ifm-color-emphasis-100); color: var(--ifm-font-color-base); padding: 3px 10px; font-size: 12px; margin-left: 10px; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ===== 主网格 ===== */
+.grid { display: grid; grid-template-columns: 380px 1fr; gap: 16px; align-items: start; }
+@media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+
+.left { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 70px; }
+@media (max-width: 920px) { .left { position: static; } }
+
+/* ===== 仿真 ===== */
+.simCard, .servoCard, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.simCard { padding: 8px; }
+.simStage {
+  background: radial-gradient(circle at 50% 35%, #eaf1ff 0%, #dbe6fb 70%, #c9d8f5 100%);
+  border-radius: 10px; height: 280px; display: flex; align-items: center; justify-content: center;
+}
+[data-theme='dark'] .simStage { background: radial-gradient(circle at 50% 35%, #1e2a44 0%, #16203a 70%, #0f1830 100%); }
+.simBar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 6px 4px; }
+.simBtns { margin-left: auto; display: flex; gap: 6px; }
+.simBtns .btnGhost { padding: 5px 10px; font-size: 12px; }
+.check { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; cursor: pointer; }
+.liveCheck { font-weight: 600; color: var(--ifm-color-primary); }
+
+/* ===== 舵机 ===== */
+.servoCard { padding: 14px 16px; }
+.cardTitle { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; }
+.servoRow { margin-bottom: 12px; }
+.servoHead { display: flex; justify-content: space-between; align-items: baseline; }
+.servoLabel { font-size: 13px; font-weight: 600; }
+.servoLabel code, .oscName code { font-size: 11px; color: var(--ifm-color-emphasis-600); }
+.servoVal { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ifm-color-primary); font-size: 13px; }
+.servoDesc { font-size: 11px; color: var(--ifm-color-emphasis-600); margin-top: 2px; }
+.slider { width: 100%; accent-color: var(--ifm-color-primary); cursor: pointer; }
+.driveBox { margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.driveHint { font-size: 11px; color: var(--ifm-color-emphasis-600); margin-left: 8px; }
+
+/* ===== 选项卡 ===== */
+.right { min-width: 0; }
+.tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+.tab, .tabActive {
+  border: none; background: none; cursor: pointer; padding: 8px 14px; border-radius: 8px 8px 0 0;
+  font-size: 14px; font-weight: 600; color: var(--ifm-color-emphasis-600);
+}
+.tabActive { background: var(--panel); color: var(--ifm-color-primary); border: 1px solid var(--line); border-bottom: none; }
+.panel { padding: 16px; }
+.muted { color: var(--ifm-color-emphasis-600); font-size: 12px; margin: 4px 0 10px; }
+
+/* ===== 预设动作 ===== */
+.paramGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.paramField { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; }
+.paramField input, .paramField select, .calibRow select, .editor input, .oscRow input, .editServo input, .editRow input {
+  padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--ifm-background-color); color: var(--ifm-font-color-base); font-size: 13px;
+}
+.actionGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 8px; }
+.actionBtn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: var(--ifm-color-emphasis-100); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 4px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--ifm-font-color-base);
+  transition: all .12s ease;
+}
+.actionBtn:hover:not(:disabled) { border-color: var(--ifm-color-primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.actionIcon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 10px;
+  color: var(--ifm-color-primary);
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--line);
+  transition: all .12s ease;
+}
+.actionBtn:hover:not(:disabled) .actionIcon {
+  color: #fff; background: var(--ifm-color-primary); border-color: var(--ifm-color-primary);
+}
+.actionBtn:disabled .actionIcon { color: var(--ifm-color-emphasis-400); }
+.quickRow { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+.danceGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.danceCard { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.danceHead { display: flex; align-items: center; gap: 9px; }
+.danceIcon {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  color: var(--ifm-color-primary);
+  background: linear-gradient(135deg, var(--ifm-color-primary-lightest, rgba(255,153,0,.14)), transparent);
+  border: 1px solid var(--line);
+  transition: all .12s ease;
+}
+.danceCard:hover .danceIcon { color: #fff; background: var(--ifm-color-primary); border-color: var(--ifm-color-primary); }
+.danceName { font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
+.handsBadge { display: inline-flex; color: var(--ifm-color-primary); }
+.danceDesc { font-size: 11px; color: var(--ifm-color-emphasis-600); flex: 1; }
+.danceCard .btnGhost { padding: 5px 10px; font-size: 12px; }
+
+/* ===== 校准 ===== */
+.calibRow { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.calibRow .slider { flex: 1; }
+.trimGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+.trimItem { display: flex; justify-content: space-between; background: var(--ifm-color-emphasis-100); padding: 8px 10px; border-radius: 8px; font-size: 13px; }
+
+/* ===== 编排器 ===== */
+.choreoToolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.timeline { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; padding-right: 4px; }
+.empty { color: var(--ifm-color-emphasis-600); font-size: 13px; padding: 16px; text-align: center; border: 1px dashed var(--line); border-radius: 8px; }
+.frame {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; cursor: pointer; background: var(--ifm-background-color);
+  transition: border-color .12s;
+}
+.frame:hover { border-color: var(--ifm-color-primary); }
+.frameSel { border-color: var(--ifm-color-primary); box-shadow: 0 0 0 2px var(--ifm-color-primary-lightest); }
+.frameOsc { background: linear-gradient(90deg, rgba(124,77,255,0.07), transparent); }
+.frameIdx { width: 22px; height: 22px; border-radius: 50%; background: var(--ifm-color-emphasis-200); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex: none; }
+.frameBody { flex: 1; min-width: 0; }
+.frameType { font-size: 13px; font-weight: 700; }
+.frameMeta { font-size: 11px; color: var(--ifm-color-emphasis-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.frameOps { display: flex; gap: 2px; flex: none; }
+.frameOps button { border: none; background: var(--ifm-color-emphasis-100); border-radius: 5px; width: 24px; height: 24px; cursor: pointer; font-size: 12px; color: var(--ifm-font-color-base); }
+.frameOps button:hover { background: var(--ifm-color-emphasis-300); }
+
+.editor { margin-top: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--ifm-color-emphasis-100); }
+.editServos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+.editServo { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.editServo input { width: 60px; }
+.editRow { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; }
+.editRow label, .oscRow label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: 600; }
+.editRow input { width: 90px; }
+.oscRow { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.oscName { min-width: 70px; font-size: 13px; font-weight: 600; }
+.oscRow input { width: 64px; }
+
+.ioRow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.ioRow .btnGhost { padding: 6px 12px; font-size: 13px; }
+.savedRow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.savedChip { display: inline-flex; align-items: center; background: var(--ifm-color-emphasis-100); border-radius: 6px; overflow: hidden; }
+.savedChip button { border: none; background: none; cursor: pointer; padding: 4px 8px; font-size: 12px; color: var(--ifm-font-color-base); }
+.chipX { color: #e5484d !important; padding: 4px 6px !important; }
+
+.preview { margin-top: 14px; font-size: 12px; }
+.preview summary { cursor: pointer; color: var(--ifm-color-emphasis-700); font-weight: 600; }
+.code { background: var(--ifm-color-emphasis-100); padding: 8px 10px; border-radius: 6px; font-size: 11px; overflow-x: auto; margin: 8px 0 0; white-space: pre-wrap; word-break: break-all; }
+
+/* ===== 控制台 ===== */
+.console { margin-top: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.console summary { cursor: pointer; font-weight: 700; font-size: 14px; display: flex; align-items: center; }
+.clearLog { margin-left: auto; border: none; background: var(--ifm-color-emphasis-100); border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer; color: var(--ifm-font-color-base); }
+.logBox { margin-top: 10px; max-height: 240px; overflow-y: auto; font-family: var(--ifm-font-family-monospace); font-size: 11px; }
+.logLine { display: flex; gap: 8px; padding: 2px 0; border-bottom: 1px solid var(--ifm-color-emphasis-100); }
+.logTime { color: var(--ifm-color-emphasis-500); flex: none; }
+.logDir { flex: none; width: 14px; text-align: center; }
+.logText { word-break: break-all; white-space: pre-wrap; }
+.log_out .logDir { color: #4c9aff; }
+.log_in .logDir { color: #36b37e; }
+.log_err { color: #e5484d; }
+.log_sys .logDir { color: #9aa0a6; }

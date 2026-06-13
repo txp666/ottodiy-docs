@@ -140,6 +140,11 @@ const config = {
             label: '使用说明',
           },
           {
+            to: '/playground',
+            position: 'left',
+            label: '在线调试',
+          },
+          {
             href: 'https://shanmaotech.cn',
             label: '闪猫官网',
             position: 'right',

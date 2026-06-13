@@ -35,6 +35,10 @@
     "message": "User Manual",
     "description": "Navbar item with label 使用说明"
   },
+  "item.label.在线调试": {
+    "message": "Console",
+    "description": "Navbar item with label 在线调试"
+  },
   "item.label.闪猫官网": {
     "message": "Official Site",
     "description": "Navbar item with label 闪猫官网"

@@ -100,6 +100,7 @@ const config = {
         logo: {
           alt: 'OttoDIY Logo',
           src: 'img/favicon.ico',
+          href: 'https://shanmaotech.cn',
         },
         items: [
           {
@@ -137,6 +138,11 @@ const config = {
             to: '/docs/usage',
             position: 'left',
             label: '使用说明',
+          },
+          {
+            href: 'https://shanmaotech.cn',
+            label: '闪猫官网',
+            position: 'right',
           },
           {
             href: 'https://github.com/txp666/ottodiy-docs',
@@ -182,6 +188,10 @@ const config = {
           {
             title: '更多',
             items: [
+              {
+                label: '闪猫科技官网',
+                href: 'https://shanmaotech.cn',
+              },
               {
                 label: '店铺',
                 href: 'https://mall.bilibili.com/neul-next/index.html?page=up-store_home&noTitleBar=1&msource=shop_share&merchantId=10624032&share_source=&share_medium=android&bbid=EB6B5C19-D944-6898-9668-A75A1D8313A713936infoc&ts=1746514066719',

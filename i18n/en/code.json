@@ -324,6 +324,9 @@
   "homepage.joinCommunity": {
     "message": "Join Open Source Tech Community"
   },
+  "homepage.exploreProducts": {
+    "message": "Explore More Products"
+  },
   "homepage.title": {
     "message": "Desktop AI Humanoid Robot Open Source Ecosystem - Open Source Otto Robot",
     "description": "The homepage title"

@@ -23,6 +23,10 @@
     "message": "QQ Group",
     "description": "The label of footer link with label=QQ群 linking to https://qm.qq.com/q/lvXglQWimm"
   },
+  "link.item.label.闪猫科技官网": {
+    "message": "Shanmao Tech Official Site",
+    "description": "The label of footer link with label=闪猫科技官网 linking to https://shanmaotech.cn"
+  },
   "link.item.label.店铺": {
     "message": "Store",
     "description": "The label of footer link with label=店铺 linking to https://mall.bilibili.com/neul-next/index.html?page=up-store_home&noTitleBar=1&msource=shop_share&merchantId=10624032&share_source=&share_medium=android&bbid=EB6B5C19-D944-6898-9668-A75A1D8313A713936infoc&ts=1746514066719"

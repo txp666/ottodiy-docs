@@ -34,6 +34,13 @@ function HomepageHeader() {
             to="https://qm.qq.com/q/DlTtZFM7VC">
             <Translate id="homepage.joinCommunity">加入开源技术交流社群</Translate> 💬
           </Link>
+          <Link
+            className="button button--secondary button--lg"
+            to="https://shanmaotech.cn"
+            target="_blank"
+            rel="noopener noreferrer">
+            <Translate id="homepage.exploreProducts">探索更多产品</Translate> 🚀
+          </Link>
         </div>
       </div>
     </header>

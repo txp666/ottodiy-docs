@@ -20,6 +20,9 @@ const MESSAGES = {
     mirror: '镜像',
     random: '随机',
     reset: '复位',
+    appearanceTitle: '外观颜色',
+    appearanceSavedHint: '颜色和表情会自动保存到本机浏览器。',
+    expressionLabel: '表情',
 
     servos: '舵机',
     keyboardDrive: '键盘驾驶',
@@ -113,6 +116,9 @@ const MESSAGES = {
     mirror: 'Mirror',
     random: 'Random',
     reset: 'Home',
+    appearanceTitle: 'Appearance',
+    appearanceSavedHint: 'Colors and expression are saved in this browser.',
+    expressionLabel: 'Expression',
 
     servos: 'Servos',
     keyboardDrive: 'Keyboard drive',

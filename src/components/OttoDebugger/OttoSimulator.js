@@ -1,152 +1,740 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-// 2D 前视 Otto 仿真，外观参照真实 OttoClaw 实拍：
-//   白色 3D 打印大圆角方盒机身 · 头顶两根细长小天线 · 正面方形 LCD 屏(弯笑眼+微笑+粉脸蛋)
-//   两条带爪夹的手臂 · 白色腿 + 单侧外伸脚板（腿+脚呈 L 形）
-//
-// 关节运动（与真实机械结构一致）：
-//   腿/髋舵机(ll,rl)：舵机【竖直】安装，绕【垂直轴】内外扭转(yaw / 转向)。
-//       整条腿一起绕垂直轴转向（前视表现为透视收窄 + 轻微转角），脚掌随腿一起转。
-//   脚/踝舵机(lf,rf)：舵机【水平】安装，绕【水平轴】翻转(roll)，脚掌像跷跷板左右倾斜。
-//   左手：drawn 向下，rot = lh（顺时针，180=举过头顶）；右手：rot = rh-180
+const MODEL_URL = '/files/models/otto.glb';
+const DEFAULT_FACE_TEXTURE_URL = '/files/gifs/staticstate.gif';
+const DEFAULT_COLORS = {
+  head: '#f0f2f5',
+  body: '#f0f2f5',
+  leftLeg: '#dfe5ee',
+  rightLeg: '#dfe5ee',
+  leftFoot: '#dfe5ee',
+  rightFoot: '#dfe5ee',
+  leftArm: '#dfe5ee',
+  rightArm: '#dfe5ee',
+  background: '#16203a',
+};
 
-const ANKLE_K = 0.7;
+const HOME = { ll: 90, rl: 90, lf: 90, rf: 90, lh: 45, rh: 135 };
+const FACE_DOM_SIZE = 240;
+const lerp = (a, b, t) => a + (b - a) * t;
+const deg = (v) => THREE.MathUtils.degToRad(v);
 
-export default function OttoSimulator({ pose, hasHands = true, transitionMs = 0, blink = true }) {
-  const p = pose || {};
-  const ll = p.ll ?? 90;
-  const rl = p.rl ?? 90;
-  const lf = p.lf ?? 90;
-  const rf = p.rf ?? 90;
-  const lh = p.lh ?? 45;
-  const rh = p.rh ?? 135;
+const PARTS = ['head', 'body', 'screen', 'leftLeg', 'rightLeg', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm'];
+const NAMED_PARTS = {
+  head: 'head',
+  body: 'body',
+  screen: 'screen',
+  left_leg: 'leftLeg',
+  right_leg: 'rightLeg',
+  left_foot: 'leftFoot',
+  right_foot: 'rightFoot',
+  left_hand: 'leftArm',
+  right_hand: 'rightArm',
+};
 
-  const leftArmRot = lh;
-  const rightArmRot = rh - 180;
+const MATERIAL_PARAMS = {
+  body: new THREE.MeshStandardMaterial({
+    color: 0xf0f2f5,
+    roughness: 0.62,
+    metalness: 0.03,
+  }),
+  limb: new THREE.MeshStandardMaterial({
+    color: 0xdfe5ee,
+    roughness: 0.68,
+    metalness: 0.02,
+  }),
+  screen: new THREE.MeshBasicMaterial({
+    color: 0x05070d,
+    toneMapped: false,
+  }),
+};
 
-  const tr = transitionMs > 0 ? { transition: `transform ${transitionMs}ms linear` } : undefined;
+function createMaterial(part) {
+  if (part === 'screen') return MATERIAL_PARAMS.screen.clone();
+  return (part === 'body' || part === 'head' ? MATERIAL_PARAMS.body : MATERIAL_PARAMS.limb).clone();
+}
 
-  const LHIP = { x: 104, y: 186 };
-  const RHIP = { x: 136, y: 186 };
-  const ANKLE_Y = 230;
-  const LSH = { x: 66, y: 112 };
-  const RSH = { x: 174, y: 112 };
+function normalizeColors(colors = {}) {
+  return { ...DEFAULT_COLORS, ...colors };
+}
 
-  // 整条腿绕髋部垂直轴扭转；脚掌在腿坐标系内再做踝翻转
-  const Leg = ({ hip, yawServo, rollServo, mirror }) => {
-    const ax = hip.x;
-    const ay = ANKLE_Y;
-    const yawDeg = yawServo - 90;
-    const sx = Math.max(0.2, Math.cos((yawDeg * Math.PI) / 180)); // 垂直轴扭转 → 透视收窄
-    const turn = (mirror ? -1 : 1) * yawDeg * 0.18; // 轻微转角指示内/外方向
-    const roll = (rollServo - 90) * ANKLE_K; // 踝水平轴翻转
-    const legT =
-      `rotate(${turn} ${ax} ${hip.y}) ` +
-      `translate(${ax} 0) scale(${sx} 1) translate(${-ax} 0)`;
-    return (
-      <g>
-        {/* 髋部舵机块（固定在身体上） */}
-        <rect x={ax - 12} y={hip.y - 8} width="24" height="20" rx="5" fill="#e7ecf3" stroke="#c2cad8" strokeWidth="1.5" />
-        {/* 整条腿（含脚）绕垂直轴扭转 */}
-        <g style={tr} transform={legT}>
-          {/* 腿柱 */}
-          <rect x={ax - 11} y={hip.y + 6} width="22" height={ay - hip.y - 6} rx="6" fill="url(#oc-white)" stroke="#c2cad8" strokeWidth="1.5" />
-          {/* 踝 + 脚掌（踝翻转）——脚板从腿的脚跟处单侧外伸，与腿构成 L 形 */}
-          <g style={tr} transform={`rotate(${roll} ${ax} ${ay})`}>
-            {(() => {
-              const dir = mirror ? 1 : -1; // 脚掌朝外侧伸出
-              const FL = 30; // 脚掌长度
-              const heel = 6; // 脚跟微小外延
-              const x0 = ax - dir * heel;
-              const x1 = ax + dir * FL;
-              const fx = Math.min(x0, x1);
-              const fw = Math.abs(x1 - x0);
-              return (
-                <>
-                  {/* 踝关节支架（位于脚跟正上方） */}
-                  <rect x={ax - 9} y={ay - 4} width="18" height="13" rx="3" fill="#e7ecf3" stroke="#c2cad8" strokeWidth="1.5" />
-                  {/* L 形脚板 */}
-                  <rect x={fx} y={ay + 8} width={fw} height="12" rx="4" fill="url(#oc-white)" stroke="#c2cad8" strokeWidth="1.5" />
-                  <rect x={fx + 3} y={ay + 6} width={fw - 6} height="5" rx="2.5" fill="#dde3ec" />
-                </>
-              );
-            })()}
-          </g>
-        </g>
-      </g>
-    );
-  };
+function applyVisualSettings(root, scene, colors = {}) {
+  const resolved = normalizeColors(colors);
+  scene.background = new THREE.Color(resolved.background);
+  root.traverse((object) => {
+    if (!object.isMesh || !object.userData.part || !object.material) return;
+    const color = resolved[object.userData.part];
+    if (color && object.material.color) object.material.color.set(color);
+  });
+}
 
-  return (
-    <svg viewBox="0 0 240 290" width="100%" height="100%" role="img" aria-label="Otto 机器人姿态预览">
-      <defs>
-        <linearGradient id="oc-white" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="100%" stopColor="#e7ecf3" />
-        </linearGradient>
-        <linearGradient id="oc-screen" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#10182b" />
-          <stop offset="100%" stopColor="#0a0f1e" />
-        </linearGradient>
-      </defs>
+function updateExpressionSource(image, faceTextureUrl) {
+  if (!image || !faceTextureUrl || image.dataset.ottoSrc === faceTextureUrl) return;
+  image.dataset.ottoSrc = faceTextureUrl;
+  image.src = faceTextureUrl;
+}
 
-      {/* 地面阴影 */}
-      <ellipse cx="120" cy="272" rx="80" ry="10" fill="rgba(0,0,0,0.12)" />
+function createFaceOverlay(wrap, faceTextureUrl = DEFAULT_FACE_TEXTURE_URL) {
+  if (typeof document === 'undefined') return null;
 
-      {/* ===== 腿 + 脚 ===== */}
-      <Leg hip={LHIP} yawServo={ll} rollServo={lf} mirror={false} />
-      <Leg hip={RHIP} yawServo={rl} rollServo={rf} mirror={true} />
+  const image = document.createElement('img');
+  image.alt = '';
+  image.dataset.ottoFace = 'overlay';
+  image.dataset.ottoSrc = faceTextureUrl;
+  image.src = faceTextureUrl;
+  image.style.position = 'absolute';
+  image.style.left = '0';
+  image.style.top = '0';
+  image.style.width = `${FACE_DOM_SIZE}px`;
+  image.style.height = `${FACE_DOM_SIZE}px`;
+  image.style.opacity = '0';
+  image.style.objectFit = 'fill';
+  image.style.pointerEvents = 'none';
+  image.style.transformOrigin = '0 0';
+  image.style.zIndex = '2';
+  image.style.willChange = 'transform, opacity';
+  wrap.appendChild(image);
+  return image;
+}
 
-      {/* ===== 手臂（带爪夹）===== */}
-      {hasHands && (
-        <>
-          <g style={tr} transform={`rotate(${leftArmRot} ${LSH.x} ${LSH.y})`}>
-            <rect x={LSH.x - 9} y={LSH.y - 10} width="18" height="20" rx="5" fill="#e7ecf3" stroke="#c2cad8" strokeWidth="1.5" />
-            <rect x={LSH.x - 8} y={LSH.y + 6} width="16" height="40" rx="6" fill="url(#oc-white)" stroke="#c2cad8" strokeWidth="1.5" />
-            <path d={`M${LSH.x - 7} ${LSH.y + 44} q-8 8 -3 16`} fill="none" stroke="#c2cad8" strokeWidth="4.5" strokeLinecap="round" />
-            <path d={`M${LSH.x + 7} ${LSH.y + 44} q8 8 3 16`} fill="none" stroke="#c2cad8" strokeWidth="4.5" strokeLinecap="round" />
-          </g>
-          <g style={tr} transform={`rotate(${rightArmRot} ${RSH.x} ${RSH.y})`}>
-            <rect x={RSH.x - 9} y={RSH.y - 10} width="18" height="20" rx="5" fill="#e7ecf3" stroke="#c2cad8" strokeWidth="1.5" />
-            <rect x={RSH.x - 8} y={RSH.y + 6} width="16" height="40" rx="6" fill="url(#oc-white)" stroke="#c2cad8" strokeWidth="1.5" />
-            <path d={`M${RSH.x - 7} ${RSH.y + 44} q-8 8 -3 16`} fill="none" stroke="#c2cad8" strokeWidth="4.5" strokeLinecap="round" />
-            <path d={`M${RSH.x + 7} ${RSH.y + 44} q8 8 3 16`} fill="none" stroke="#c2cad8" strokeWidth="4.5" strokeLinecap="round" />
-          </g>
-        </>
-      )}
+function quadMatrix3d([p0, p1, p2, p3], width = 1, height = 1) {
+  const dx1 = p1.x - p2.x;
+  const dy1 = p1.y - p2.y;
+  const dx2 = p3.x - p2.x;
+  const dy2 = p3.y - p2.y;
+  const dx3 = p0.x - p1.x + p2.x - p3.x;
+  const dy3 = p0.y - p1.y + p2.y - p3.y;
+  let a;
+  let b;
+  let c;
+  let d;
+  let e;
+  let f;
+  let g;
+  let h;
 
-      {/* ===== 头顶细长小天线 ===== */}
-      <g fill="url(#oc-white)" stroke="#c2cad8" strokeWidth="1.2">
-        <path d="M112 64 L96 26 L101 25 L116 62 Z" />
-        <path d="M128 64 L144 26 L139 25 L124 62 Z" />
-      </g>
+  if (Math.abs(dx3) < 1e-6 && Math.abs(dy3) < 1e-6) {
+    a = p1.x - p0.x;
+    b = p1.y - p0.y;
+    c = p3.x - p0.x;
+    d = p3.y - p0.y;
+    e = p0.x;
+    f = p0.y;
+    g = 0;
+    h = 0;
+  } else {
+    const det = dx1 * dy2 - dx2 * dy1;
+    if (Math.abs(det) < 1e-6) return null;
+    g = (dx3 * dy2 - dx2 * dy3) / det;
+    h = (dx1 * dy3 - dx3 * dy1) / det;
+    a = p1.x - p0.x + g * p1.x;
+    b = p1.y - p0.y + g * p1.y;
+    c = p3.x - p0.x + h * p3.x;
+    d = p3.y - p0.y + h * p3.y;
+    e = p0.x;
+    f = p0.y;
+  }
 
-      {/* ===== 机身（大圆角方盒）===== */}
-      <rect x="64" y="58" width="112" height="130" rx="20" fill="url(#oc-white)" stroke="#c2cad8" strokeWidth="2" />
-      {/* 顶盖接缝 */}
-      <path d="M70 84 Q120 90 170 84" fill="none" stroke="#d3dae4" strokeWidth="1.5" />
-      {/* 侧面螺丝 */}
-      <circle cx="72" cy="112" r="2.4" fill="#aab4c4" />
-      <circle cx="168" cy="112" r="2.4" fill="#aab4c4" />
+  return `matrix3d(${[
+    a / width, b / width, 0, g / width,
+    c / height, d / height, 0, h / height,
+    0, 0, 1, 0,
+    e, f, 0, 1,
+  ].map((value) => Number(value.toFixed(6))).join(',')})`;
+}
 
-      {/* ===== LCD 屏 ===== */}
-      <rect x="86" y="96" width="68" height="64" rx="9" fill="url(#oc-screen)" stroke="#06080f" strokeWidth="2" />
-      {/* 弯笑眼（青色） */}
-      <g fill="none" stroke="#63e6ff" strokeWidth="4" strokeLinecap="round">
-        <path d="M99 120 Q106 110 113 120">
-          {blink && <animate attributeName="d" values="M99 120 Q106 110 113 120;M99 120 Q106 110 113 120;M99 118 Q106 120 113 118;M99 120 Q106 110 113 120" dur="4.5s" keyTimes="0;0.9;0.95;1" repeatCount="indefinite" />}
-        </path>
-        <path d="M127 120 Q134 110 141 120">
-          {blink && <animate attributeName="d" values="M127 120 Q134 110 141 120;M127 120 Q134 110 141 120;M127 118 Q134 120 141 118;M127 120 Q134 110 141 120" dur="4.5s" keyTimes="0;0.9;0.95;1" repeatCount="indefinite" />}
-        </path>
-      </g>
-      {/* 微笑 */}
-      <path d="M108 138 Q120 150 132 138" fill="none" stroke="#63e6ff" strokeWidth="3.5" strokeLinecap="round" />
-      {/* 粉脸蛋 */}
-      <g fill="#ff7e9b" opacity="0.9">
-        <ellipse cx="97" cy="135" rx="4.5" ry="3" />
-        <ellipse cx="143" cy="135" rx="4.5" ry="3" />
-      </g>
-    </svg>
+function updateFaceOverlay(image, screenMesh, camera, renderer) {
+  if (!image || !screenMesh || !screenMesh.geometry || !screenMesh.geometry.boundingBox) return;
+
+  screenMesh.updateWorldMatrix(true, false);
+  const box = screenMesh.geometry.boundingBox;
+  const insetX = (box.max.x - box.min.x) * 0.02;
+  const insetY = (box.max.y - box.min.y) * 0.02;
+  const z = box.max.z + 0.0008;
+  const screenCenter = new THREE.Vector3(
+    (box.min.x + box.max.x) / 2,
+    (box.min.y + box.max.y) / 2,
+    z
   );
+  const screenNormal = new THREE.Vector3(0, 0, 1).transformDirection(screenMesh.matrixWorld);
+  const toCamera = camera.position.clone().sub(screenMesh.localToWorld(screenCenter.clone())).normalize();
+  if (screenNormal.dot(toCamera) <= -0.03) {
+    image.style.opacity = '0';
+    return;
+  }
+
+  const localPoints = [
+    new THREE.Vector3(box.min.x + insetX, box.max.y - insetY, z),
+    new THREE.Vector3(box.max.x - insetX, box.max.y - insetY, z),
+    new THREE.Vector3(box.max.x - insetX, box.min.y + insetY, z),
+    new THREE.Vector3(box.min.x + insetX, box.min.y + insetY, z),
+  ];
+  const canvas = renderer.domElement;
+  const projected = localPoints.map((point) => {
+    const ndc = screenMesh.localToWorld(point).project(camera);
+    return {
+      x: ((ndc.x + 1) / 2) * canvas.clientWidth,
+      y: ((1 - ndc.y) / 2) * canvas.clientHeight,
+      z: ndc.z,
+    };
+  });
+
+  if (projected.some((point) => point.z < -1 || point.z > 1)) {
+    image.style.opacity = '0';
+    return;
+  }
+
+  const matrix = quadMatrix3d(projected, FACE_DOM_SIZE, FACE_DOM_SIZE);
+  if (!matrix) {
+    image.style.opacity = '0';
+    return;
+  }
+
+  image.style.transform = matrix;
+  image.style.opacity = '1';
+}
+
+const PIVOTS_Z_UP = {
+  leftLeg: new THREE.Vector3(-25, 0, -40),
+  rightLeg: new THREE.Vector3(25, 0, -40),
+  leftFoot: new THREE.Vector3(-36, 0, -65),
+  rightFoot: new THREE.Vector3(36, 0, -65),
+  leftArm: new THREE.Vector3(-54, -4, -13),
+  rightArm: new THREE.Vector3(54, -4, -13),
+};
+
+const PIVOTS_Y_UP = {
+  leftLeg: new THREE.Vector3(25.5, -40, 0),
+  rightLeg: new THREE.Vector3(-25.5, -40, 0),
+  leftFoot: new THREE.Vector3(36, -65, 0),
+  rightFoot: new THREE.Vector3(-36, -65, 0),
+  leftArm: new THREE.Vector3(54, -13, -4),
+  rightArm: new THREE.Vector3(-54, -13, -4),
+};
+
+const normalizeName = (name = '') => name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+
+function getPose(anim) {
+  if (!anim.dur) {
+    anim.cur = { ...anim.to };
+    return anim.cur;
+  }
+  const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  const t = Math.min(1, Math.max(0, (now - anim.start) / anim.dur));
+  const eased = t * t * (3 - 2 * t);
+  anim.cur = {
+    ll: lerp(anim.from.ll, anim.to.ll, eased),
+    rl: lerp(anim.from.rl, anim.to.rl, eased),
+    lf: lerp(anim.from.lf, anim.to.lf, eased),
+    rf: lerp(anim.from.rf, anim.to.rf, eased),
+    lh: lerp(anim.from.lh, anim.to.lh, eased),
+    rh: lerp(anim.from.rh, anim.to.rh, eased),
+  };
+  return anim.cur;
+}
+
+function classifyPart(v) {
+  const side = v.x < 0 ? 'left' : 'right';
+  if (v.z < -66 && Math.abs(v.x) > 12) return `${side}Foot`;
+  if (v.z < -39 && Math.abs(v.x) > 8 && Math.abs(v.x) < 44) return `${side}Leg`;
+  if (Math.abs(v.x) > 38 && v.z > -62) return `${side}Arm`;
+  return 'body';
+}
+
+function splitModelByServoParts(model) {
+  const buckets = PARTS.reduce((acc, part) => {
+    acc[part] = { positions: [], normals: [] };
+    return acc;
+  }, {});
+  const bounds = new THREE.Box3();
+  let triangleCount = 0;
+
+  model.updateWorldMatrix(true, true);
+  model.traverse((mesh) => {
+    if (!mesh.isMesh || !mesh.geometry) return;
+
+    const geometry = mesh.geometry;
+    const posAttr = geometry.getAttribute('position');
+    const normalAttr = geometry.getAttribute('normal');
+    if (!posAttr) return;
+
+    const index = geometry.index;
+    const src = {
+      position: posAttr.array,
+      normal: normalAttr && normalAttr.array,
+    };
+    const matrix = mesh.matrixWorld;
+    const normalMatrix = new THREE.Matrix3().getNormalMatrix(matrix);
+    const a = new THREE.Vector3();
+    const b = new THREE.Vector3();
+    const c = new THREE.Vector3();
+    const n = new THREE.Vector3();
+    const centroid = new THREE.Vector3();
+
+    const read = (vertexIndex, target) => {
+      const p = vertexIndex * 3;
+      target.set(src.position[p], src.position[p + 1], src.position[p + 2]).applyMatrix4(matrix);
+      bounds.expandByPoint(target);
+    };
+
+    const writeTriangle = (i0, i1, i2) => {
+      read(i0, a);
+      read(i1, b);
+      read(i2, c);
+      centroid.copy(a).add(b).add(c).multiplyScalar(1 / 3);
+      const part = classifyPart(centroid);
+      const dst = buckets[part];
+      [a, b, c].forEach((v) => dst.positions.push(v.x, v.y, v.z));
+      if (src.normal) {
+        [i0, i1, i2].forEach((i) => {
+          const p = i * 3;
+          n.set(src.normal[p], src.normal[p + 1], src.normal[p + 2]).applyMatrix3(normalMatrix).normalize();
+          dst.normals.push(n.x, n.y, n.z);
+        });
+      }
+      triangleCount += 1;
+    };
+
+    if (index) {
+      for (let i = 0; i < index.count; i += 3) {
+        writeTriangle(index.getX(i), index.getX(i + 1), index.getX(i + 2));
+      }
+    } else {
+      for (let i = 0; i < posAttr.count; i += 3) writeTriangle(i, i + 1, i + 2);
+    }
+  });
+
+  const meshes = {};
+  PARTS.forEach((part) => {
+    const bucket = buckets[part];
+    if (!bucket.positions.length) return;
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(bucket.positions, 3));
+    if (bucket.normals.length === bucket.positions.length) {
+      geometry.setAttribute('normal', new THREE.Float32BufferAttribute(bucket.normals, 3));
+    } else {
+      geometry.computeVertexNormals();
+    }
+    geometry.computeBoundingBox();
+    meshes[part] = new THREE.Mesh(geometry, createMaterial(part));
+    meshes[part].userData.part = part;
+    meshes[part].castShadow = true;
+    meshes[part].receiveShadow = true;
+  });
+
+  return { bounds, meshes, triangleCount };
+}
+
+function addPivot(parent, mesh, pivot) {
+  const group = new THREE.Group();
+  const parentPivot = parent.userData && parent.userData.sourcePivot;
+  group.position.copy(parentPivot ? pivot.clone().sub(parentPivot) : pivot);
+  group.userData.sourcePivot = pivot.clone();
+  mesh.position.copy(pivot).multiplyScalar(-1);
+  group.add(mesh);
+  parent.add(group);
+  return group;
+}
+
+function countTriangles(mesh) {
+  const geometry = mesh.geometry;
+  if (!geometry) return 0;
+  return geometry.index ? geometry.index.count / 3 : geometry.getAttribute('position').count / 3;
+}
+
+function makeMergedPartMesh(node, part) {
+  node.updateWorldMatrix(true, true);
+  const geometries = [];
+
+  node.traverse((child) => {
+    if (!child.isMesh || !child.geometry) return;
+    let geometry = child.geometry.clone();
+    if (geometry.index) geometry = geometry.toNonIndexed();
+
+    Object.keys(geometry.attributes).forEach((name) => {
+      if (name !== 'position' && name !== 'normal') geometry.deleteAttribute(name);
+    });
+
+    geometry.applyMatrix4(child.matrixWorld);
+    if (!geometry.getAttribute('normal')) geometry.computeVertexNormals();
+    geometries.push(geometry);
+  });
+
+  if (!geometries.length) return null;
+
+  const merged = geometries.length === 1 ? geometries[0] : mergeGeometries(geometries, false);
+  if (!merged) {
+    geometries.forEach((geometry) => geometry.dispose());
+    return null;
+  }
+
+  if (geometries.length > 1) geometries.forEach((geometry) => geometry.dispose());
+  merged.computeBoundingBox();
+  merged.computeBoundingSphere();
+
+  const mesh = new THREE.Mesh(merged, createMaterial(part));
+  mesh.name = part;
+  mesh.userData.part = part;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+function buildNamedArticulatedOtto(model) {
+  const namedNodes = {};
+
+  model.updateWorldMatrix(true, true);
+  model.traverse((object) => {
+    const part = NAMED_PARTS[normalizeName(object.name)];
+    if (part && !namedNodes[part]) namedNodes[part] = object;
+  });
+
+  if (!PARTS.every((part) => namedNodes[part])) return null;
+
+  const meshes = {};
+  const bounds = new THREE.Box3();
+  let triangleCount = 0;
+
+  PARTS.forEach((part) => {
+    const mesh = makeMergedPartMesh(namedNodes[part], part);
+    if (!mesh) return;
+    meshes[part] = mesh;
+    bounds.expandByObject(mesh);
+    triangleCount += countTriangles(mesh);
+  });
+
+  if (!PARTS.every((part) => meshes[part])) return null;
+
+  const center = bounds.getCenter(new THREE.Vector3());
+  const size = bounds.getSize(new THREE.Vector3());
+  const unitScale = Math.max(size.x, size.y, size.z) < 10 ? 0.001 : 1;
+  const screenBounds = meshes.screen.geometry.boundingBox.clone();
+  const pivots = {};
+  ['leftLeg', 'rightLeg', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm'].forEach((part) => {
+    const origin = namedNodes[part].getWorldPosition(new THREE.Vector3());
+    pivots[part] = origin.lengthSq() > 1e-12 ? origin : PIVOTS_Y_UP[part].clone().multiplyScalar(unitScale);
+  });
+  const rig = new THREE.Group();
+  const joints = {};
+
+  if (meshes.head) rig.add(meshes.head);
+  if (meshes.body) rig.add(meshes.body);
+  if (meshes.screen) rig.add(meshes.screen);
+  joints.leftLeg = addPivot(rig, meshes.leftLeg, pivots.leftLeg);
+  joints.rightLeg = addPivot(rig, meshes.rightLeg, pivots.rightLeg);
+  joints.leftFoot = addPivot(joints.leftLeg, meshes.leftFoot, pivots.leftFoot);
+  joints.rightFoot = addPivot(joints.rightLeg, meshes.rightFoot, pivots.rightFoot);
+  joints.leftArm = addPivot(rig, meshes.leftArm, pivots.leftArm);
+  joints.rightArm = addPivot(rig, meshes.rightArm, pivots.rightArm);
+
+  rig.position.sub(center);
+  return {
+    rig,
+    joints,
+    center,
+    size,
+    partTriangles: PARTS.reduce((acc, part) => {
+      acc[part] = meshes[part] ? countTriangles(meshes[part]) : 0;
+      return acc;
+    }, {}),
+    triangleCount,
+    coordinateSystem: 'y-up',
+    rootRotation: new THREE.Euler(0, 0, 0),
+    source: 'named-glb',
+    pivots,
+    screenBounds,
+    screenMesh: meshes.screen,
+  };
+}
+
+function buildSplitArticulatedOtto(model) {
+  const { bounds, meshes, triangleCount } = splitModelByServoParts(model);
+  const center = bounds.getCenter(new THREE.Vector3());
+  const rig = new THREE.Group();
+  const joints = {};
+
+  if (meshes.body) rig.add(meshes.body);
+  joints.leftLeg = meshes.leftLeg && addPivot(rig, meshes.leftLeg, PIVOTS_Z_UP.leftLeg);
+  joints.rightLeg = meshes.rightLeg && addPivot(rig, meshes.rightLeg, PIVOTS_Z_UP.rightLeg);
+  joints.leftFoot = meshes.leftFoot && addPivot(joints.leftLeg || rig, meshes.leftFoot, PIVOTS_Z_UP.leftFoot);
+  joints.rightFoot = meshes.rightFoot && addPivot(joints.rightLeg || rig, meshes.rightFoot, PIVOTS_Z_UP.rightFoot);
+  joints.leftArm = meshes.leftArm && addPivot(rig, meshes.leftArm, PIVOTS_Z_UP.leftArm);
+  joints.rightArm = meshes.rightArm && addPivot(rig, meshes.rightArm, PIVOTS_Z_UP.rightArm);
+
+  rig.position.sub(center);
+  return {
+    rig,
+    joints,
+    center,
+    size: bounds.getSize(new THREE.Vector3()),
+    partTriangles: PARTS.reduce((acc, part) => {
+      acc[part] = meshes[part] ? countTriangles(meshes[part]) : 0;
+      return acc;
+    }, {}),
+    triangleCount,
+    coordinateSystem: 'z-up',
+    rootRotation: new THREE.Euler(-Math.PI / 2, 0, 0),
+    source: 'spatial-fallback',
+  };
+}
+
+function buildArticulatedOtto(model) {
+  return buildNamedArticulatedOtto(model) || buildSplitArticulatedOtto(model);
+}
+
+function disposeSourceScene(model) {
+  model.traverse((object) => {
+    if (!object.isMesh) return;
+    if (object.geometry) object.geometry.dispose();
+    if (Array.isArray(object.material)) object.material.forEach((material) => material.dispose());
+    else if (object.material) object.material.dispose();
+  });
+}
+
+function applyPose(joints, pose, hasHands, coordinateSystem = 'z-up') {
+  const isYUp = coordinateSystem === 'y-up';
+  const blenderZAxis = isYUp ? 'y' : 'z';
+  if (joints.leftLeg) joints.leftLeg.rotation[blenderZAxis] = deg((pose.ll - 90) * 0.45);
+  if (joints.rightLeg) joints.rightLeg.rotation[blenderZAxis] = deg((90 - pose.rl) * 0.45);
+  if (joints.leftFoot) joints.leftFoot.rotation[isYUp ? 'z' : 'y'] = deg((pose.lf - 90) * 0.7);
+  if (joints.rightFoot) joints.rightFoot.rotation[isYUp ? 'z' : 'y'] = deg((pose.rf - 90) * 0.7);
+  if (joints.leftArm) {
+    joints.leftArm.visible = hasHands;
+    joints.leftArm.rotation[isYUp ? 'z' : 'y'] = deg((pose.lh - HOME.lh) * 0.9);
+  }
+  if (joints.rightArm) {
+    joints.rightArm.visible = hasHands;
+    joints.rightArm.rotation[isYUp ? 'z' : 'y'] = deg((pose.rh - HOME.rh) * 0.9);
+  }
+}
+
+export default function OttoSimulator({
+  pose,
+  hasHands = true,
+  transitionMs = 0,
+  blink = true,
+  colors = DEFAULT_COLORS,
+  faceTextureUrl = DEFAULT_FACE_TEXTURE_URL,
+}) {
+  const wrapRef = useRef(null);
+  const animRef = useRef({ from: { ...HOME }, to: { ...HOME }, start: 0, dur: 0, cur: { ...HOME } });
+  const handsRef = useRef(hasHands);
+  const colorsRef = useRef(normalizeColors(colors));
+  const faceTextureUrlRef = useRef(faceTextureUrl);
+
+  useEffect(() => {
+    const a = animRef.current;
+    a.from = { ...a.cur };
+    a.to = { ...(pose || HOME) };
+    a.start = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    a.dur = Math.max(0, transitionMs);
+  }, [pose, transitionMs]);
+
+  useEffect(() => {
+    handsRef.current = hasHands;
+  }, [hasHands]);
+
+  useEffect(() => {
+    colorsRef.current = normalizeColors(colors);
+  }, [colors]);
+
+  useEffect(() => {
+    faceTextureUrlRef.current = faceTextureUrl || DEFAULT_FACE_TEXTURE_URL;
+  }, [faceTextureUrl]);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+
+    let W = wrap.clientWidth || 300;
+    let H = wrap.clientHeight || 280;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.setSize(W, H);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    wrap.appendChild(renderer.domElement);
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    renderer.domElement.style.display = 'block';
+    renderer.domElement.dataset.ottoStatus = 'booting';
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 2000);
+
+    // 灯光
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x3a4a66, 1.0));
+    const key = new THREE.DirectionalLight(0xffffff, 2.0);
+    key.position.set(4, 8, 6);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xbfd4ff, 0.6);
+    fill.position.set(-5, 2, -3);
+    scene.add(fill);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enablePan = false;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.minDistance = 1;
+    controls.maxDistance = 100;
+
+    const root = new THREE.Group();
+    scene.add(root);
+    let joints = null;
+    let coordinateSystem = 'z-up';
+    let ground = null;
+    let screenMesh = null;
+    const expressionImage = createFaceOverlay(wrap, faceTextureUrlRef.current);
+
+    const loader = new GLTFLoader();
+    const abort = new AbortController();
+    const loadModel = async () => {
+      try {
+        window.__ottoDbg = { loaded: false, loading: true, url: MODEL_URL };
+        renderer.domElement.dataset.ottoStatus = 'loading';
+        const timeout = window.setTimeout(() => abort.abort(), 15000);
+        const response = await fetch(MODEL_URL, { signal: abort.signal, cache: 'no-store' });
+        window.clearTimeout(timeout);
+        if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        const buffer = await response.arrayBuffer();
+        window.__ottoDbg = { loaded: false, loading: true, fetchedBytes: buffer.byteLength, url: MODEL_URL };
+        renderer.domElement.dataset.ottoBytes = String(buffer.byteLength);
+        const gltf = await new Promise((resolve, reject) => {
+          loader.parse(buffer, '', resolve, reject);
+        });
+        const articulated = buildArticulatedOtto(gltf.scene);
+        disposeSourceScene(gltf.scene);
+        joints = articulated.joints;
+        coordinateSystem = articulated.coordinateSystem;
+        root.rotation.copy(articulated.rootRotation);
+
+        const size = articulated.size;
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const scale = 3.9 / maxDim;
+        root.scale.setScalar(scale);
+        screenMesh = articulated.screenMesh || null;
+        root.add(articulated.rig);
+        applyVisualSettings(root, scene, colorsRef.current);
+        applyPose(joints, animRef.current.cur, handsRef.current, coordinateSystem);
+
+        const wbox = new THREE.Box3().setFromObject(root);
+        const wsize = wbox.getSize(new THREE.Vector3());
+        const wcenter = wbox.getCenter(new THREE.Vector3());
+
+        ground = new THREE.Mesh(
+          new THREE.PlaneGeometry(20, 20),
+          new THREE.ShadowMaterial({ opacity: 0.18 })
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.set(wcenter.x, wbox.min.y, wcenter.z);
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        const dist = Math.max(wsize.x, wsize.y, wsize.z) * 1.42;
+        camera.position.set(wcenter.x, wcenter.y + dist * 0.18, wcenter.z + dist);
+        controls.target.copy(wcenter);
+        controls.update();
+
+        window.__ottoDbg = {
+          loaded: true,
+          meshCount: PARTS.filter((part) => articulated.partTriangles[part] > 0).length,
+          triangleCount: articulated.triangleCount,
+          partTriangles: articulated.partTriangles,
+          rawSize: size.toArray(),
+          wsize: wsize.toArray(),
+          wcenter: wcenter.toArray(),
+          camPos: camera.position.toArray(),
+          source: articulated.source,
+          coordinateSystem,
+          expression: screenMesh ? faceTextureUrlRef.current : null,
+          pivots: articulated.pivots && Object.fromEntries(
+            Object.entries(articulated.pivots).map(([keyName, value]) => [keyName, value.toArray()])
+          ),
+        };
+        renderer.domElement.dataset.ottoStatus = 'loaded';
+        renderer.domElement.dataset.ottoParts = JSON.stringify(articulated.partTriangles);
+        if (articulated.pivots) {
+          renderer.domElement.dataset.ottoPivots = JSON.stringify(
+            Object.fromEntries(Object.entries(articulated.pivots).map(([keyName, value]) => [keyName, value.toArray()]))
+          );
+        }
+      } catch (err) {
+        if (abort.signal.aborted) return;
+        window.__ottoDbg = { loaded: false, error: String(err && err.message || err) };
+        renderer.domElement.dataset.ottoStatus = 'error';
+        renderer.domElement.dataset.ottoError = String(err && err.message || err);
+        console.error('[OttoSimulator] 模型加载失败', err);
+      }
+    };
+    loadModel();
+
+    let raf = 0;
+    const render = () => {
+      if (joints) {
+        const currentPose = getPose(animRef.current);
+        applyPose(joints, currentPose, handsRef.current, coordinateSystem);
+        applyVisualSettings(root, scene, colorsRef.current);
+        renderer.domElement.dataset.ottoPose = [
+          Math.round(currentPose.ll),
+          Math.round(currentPose.rl),
+          Math.round(currentPose.lf),
+          Math.round(currentPose.rf),
+          Math.round(currentPose.lh),
+          Math.round(currentPose.rh),
+        ].join(',');
+      }
+      updateExpressionSource(expressionImage, faceTextureUrlRef.current);
+      controls.update();
+      renderer.render(scene, camera);
+      updateFaceOverlay(expressionImage, screenMesh, camera, renderer);
+      raf = requestAnimationFrame(render);
+    };
+    raf = requestAnimationFrame(render);
+
+    const onResize = () => {
+      W = wrap.clientWidth || 300;
+      H = wrap.clientHeight || 280;
+      renderer.setSize(W, H);
+      camera.aspect = W / H;
+      camera.updateProjectionMatrix();
+    };
+    const ro = new ResizeObserver(onResize);
+    ro.observe(wrap);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      abort.abort();
+      ro.disconnect();
+      controls.dispose();
+      root.traverse((o) => {
+        if (o.isMesh) {
+          o.geometry.dispose();
+          const disposeMaterial = (m) => {
+            if (m.map) m.map.dispose();
+            m.dispose();
+          };
+          if (Array.isArray(o.material)) o.material.forEach(disposeMaterial);
+          else if (o.material) disposeMaterial(o.material);
+        }
+      });
+      if (ground) {
+        ground.geometry.dispose();
+        ground.material.dispose();
+      }
+      if (expressionImage && expressionImage.parentNode) expressionImage.parentNode.removeChild(expressionImage);
+      renderer.dispose();
+      if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <div ref={wrapRef} style={{ width: '100%', height: '100%', position: 'relative' }} />;
 }

@@ -22,7 +22,81 @@ import styles from './styles.module.css';
 
 const LS_IP = 'otto-debug-ip';
 const LS_CHOREOS = 'otto-debug-choreos';
+const LS_SIM_COLORS = 'otto-debug-sim-colors';
+const LS_EXPRESSION = 'otto-debug-expression';
+const LS_APPEARANCE_OPEN = 'otto-debug-appearance-open';
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function readStore(key) {
+  if (typeof window === 'undefined') return null;
+  try {
+    if (window.localStorage) return window.localStorage.getItem(key);
+  } catch (e) {}
+  try {
+    const encodedKey = `${encodeURIComponent(key)}=`;
+    const cookie = document.cookie.split('; ').find((item) => item.startsWith(encodedKey));
+    return cookie ? decodeURIComponent(cookie.slice(encodedKey.length)) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeStore(key, value) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (window.localStorage) {
+      window.localStorage.setItem(key, value);
+      return;
+    }
+  } catch (e) {}
+  try {
+    document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+  } catch (e) {}
+}
+
+function removeStore(key) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (window.localStorage) window.localStorage.removeItem(key);
+  } catch (e) {}
+  try {
+    document.cookie = `${encodeURIComponent(key)}=; path=/; max-age=0; SameSite=Lax`;
+  } catch (e) {}
+}
+
+const DEFAULT_SIM_COLORS = {
+  head: '#f0f2f5',
+  body: '#f0f2f5',
+  leftLeg: '#dfe5ee',
+  rightLeg: '#dfe5ee',
+  leftFoot: '#dfe5ee',
+  rightFoot: '#dfe5ee',
+  leftArm: '#dfe5ee',
+  rightArm: '#dfe5ee',
+  background: '#16203a',
+};
+
+const COLOR_FIELDS = [
+  { key: 'head', label: '头', labelEn: 'Head' },
+  { key: 'body', label: '身体', labelEn: 'Body' },
+  { key: 'leftLeg', label: '左腿', labelEn: 'Left leg' },
+  { key: 'rightLeg', label: '右腿', labelEn: 'Right leg' },
+  { key: 'leftFoot', label: '左脚', labelEn: 'Left foot' },
+  { key: 'rightFoot', label: '右脚', labelEn: 'Right foot' },
+  { key: 'leftArm', label: '左手', labelEn: 'Left arm' },
+  { key: 'rightArm', label: '右手', labelEn: 'Right arm' },
+  { key: 'background', label: '背景', labelEn: 'Background' },
+];
+
+const EXPRESSIONS = [
+  { value: 'staticstate', label: '默认', labelEn: 'Default', url: '/files/gifs/staticstate.gif' },
+  { value: 'happy', label: '开心', labelEn: 'Happy', url: '/files/gifs/happy.gif' },
+  { value: 'sad', label: '悲伤', labelEn: 'Sad', url: '/files/gifs/sad.gif' },
+  { value: 'anger', label: '生气', labelEn: 'Angry', url: '/files/gifs/anger.gif' },
+  { value: 'scare', label: '害怕', labelEn: 'Scared', url: '/files/gifs/scare.gif' },
+  { value: 'buxue', label: '不屑', labelEn: 'Dismissive', url: '/files/gifs/buxue.gif' },
+];
 
 const BoltIcon = () => (
   <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ verticalAlign: '-1px' }}>
@@ -44,6 +118,9 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const [serverInfo, setServerInfo] = useState(null);
   const [isSecure, setIsSecure] = useState(false);
   const [hasHands, setHasHands] = useState(true);
+  const [simColors, setSimColors] = useState(DEFAULT_SIM_COLORS);
+  const [expression, setExpression] = useState('staticstate');
+  const [appearanceOpen, setAppearanceOpen] = useState(true);
 
   const [pose, setPose] = useState({ ...HOME_POSE });
   const [transitionMs, setTransitionMs] = useState(150);
@@ -71,6 +148,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const pendingRef = useRef({});
   const liveThrottleRef = useRef(0);
   const playAbortRef = useRef(false);
+  const storageReadyRef = useRef(false);
 
   const addLog = useCallback((dir, text) => {
     setLog((prev) => [...prev, { t: Date.now(), dir, text }].slice(-200));
@@ -79,10 +157,17 @@ export default function OttoDebugger({ lang = 'zh' }) {
   useEffect(() => {
     setIsSecure(typeof window !== 'undefined' && window.location.protocol === 'https:');
     try {
-      const saved = window.localStorage.getItem(LS_IP);
+      const saved = readStore(LS_IP);
       if (saved) setIp(saved);
+      const savedColors = JSON.parse(readStore(LS_SIM_COLORS) || 'null');
+      if (savedColors && typeof savedColors === 'object') setSimColors({ ...DEFAULT_SIM_COLORS, ...savedColors });
+      const savedExpression = readStore(LS_EXPRESSION);
+      if (EXPRESSIONS.some((item) => item.value === savedExpression)) setExpression(savedExpression);
+      const savedAppearanceOpen = readStore(LS_APPEARANCE_OPEN);
+      if (savedAppearanceOpen === '0' || savedAppearanceOpen === '1') setAppearanceOpen(savedAppearanceOpen === '1');
       refreshSavedNames();
     } catch (e) {}
+    storageReadyRef.current = true;
     return () => {
       playAbortRef.current = true;
       if (wsRef.current) wsRef.current.close();
@@ -90,13 +175,44 @@ export default function OttoDebugger({ lang = 'zh' }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!storageReadyRef.current) return;
+    writeStore(LS_SIM_COLORS, JSON.stringify(simColors));
+  }, [simColors]);
+
+  useEffect(() => {
+    if (!storageReadyRef.current) return;
+    writeStore(LS_EXPRESSION, expression);
+  }, [expression]);
+
+  useEffect(() => {
+    if (!storageReadyRef.current) return;
+    writeStore(LS_APPEARANCE_OPEN, appearanceOpen ? '1' : '0');
+  }, [appearanceOpen]);
+
   const refreshSavedNames = () => {
     try {
-      const data = JSON.parse(window.localStorage.getItem(LS_CHOREOS) || '{}');
+      const data = JSON.parse(readStore(LS_CHOREOS) || '{}');
       setSavedNames(Object.keys(data));
     } catch (e) {
       setSavedNames([]);
     }
+  };
+
+  const updateSimColor = (key, value) => {
+    setSimColors((prev) => {
+      const next = { ...prev, [key]: value };
+      return next;
+    });
+  };
+
+  const resetSimColors = () => {
+    setSimColors(DEFAULT_SIM_COLORS);
+    removeStore(LS_SIM_COLORS);
+  };
+
+  const updateExpression = (value) => {
+    setExpression(value);
   };
 
   const connect = useCallback(() => {
@@ -106,7 +222,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
     const url = `ws://${ip}:${WS_PORT}${WS_PATH}`;
     setStatus('connecting');
     addLog('sys', t.logConnecting(url));
-    try { window.localStorage.setItem(LS_IP, ip); } catch (e) {}
+    writeStore(LS_IP, ip);
 
     let ws;
     try {
@@ -369,23 +485,23 @@ export default function OttoDebugger({ lang = 'zh' }) {
     const name = window.prompt(t.promptSaveName);
     if (!name) return;
     try {
-      const data = JSON.parse(window.localStorage.getItem(LS_CHOREOS) || '{}');
+      const data = JSON.parse(readStore(LS_CHOREOS) || '{}');
       data[name] = frames;
-      window.localStorage.setItem(LS_CHOREOS, JSON.stringify(data));
+      writeStore(LS_CHOREOS, JSON.stringify(data));
       refreshSavedNames();
     } catch (e) {}
   };
   const loadNamed = (name) => {
     try {
-      const data = JSON.parse(window.localStorage.getItem(LS_CHOREOS) || '{}');
+      const data = JSON.parse(readStore(LS_CHOREOS) || '{}');
       if (data[name]) { setFrames(data[name]); setSelectedId(null); }
     } catch (e) {}
   };
   const deleteNamed = (name) => {
     try {
-      const data = JSON.parse(window.localStorage.getItem(LS_CHOREOS) || '{}');
+      const data = JSON.parse(readStore(LS_CHOREOS) || '{}');
       delete data[name];
-      window.localStorage.setItem(LS_CHOREOS, JSON.stringify(data));
+      writeStore(LS_CHOREOS, JSON.stringify(data));
       refreshSavedNames();
     } catch (e) {}
   };
@@ -449,7 +565,13 @@ export default function OttoDebugger({ lang = 'zh' }) {
         <div className={styles.left}>
           <div className={styles.simCard}>
             <div className={styles.simStage}>
-              <OttoSimulator pose={pose} hasHands={hasHands} transitionMs={transitionMs} />
+              <OttoSimulator
+                pose={pose}
+                hasHands={hasHands}
+                transitionMs={transitionMs}
+                colors={simColors}
+                faceTextureUrl={(EXPRESSIONS.find((item) => item.value === expression) || EXPRESSIONS[0]).url}
+              />
             </div>
             <div className={styles.simBar}>
               <label className={styles.check}>
@@ -465,6 +587,39 @@ export default function OttoDebugger({ lang = 'zh' }) {
               </div>
             </div>
           </div>
+
+          <details
+            className={styles.appearanceCard}
+            open={appearanceOpen}
+            onToggle={(e) => setAppearanceOpen(e.currentTarget.open)}
+          >
+            <summary className={styles.cardTitle}>
+              <span>{t.appearanceTitle}</span>
+              <button className={styles.btnGhostSm} onClick={(e) => { e.preventDefault(); resetSimColors(); }}>{t.reset}</button>
+            </summary>
+            <div className={styles.colorGrid}>
+              <label className={`${styles.colorField} ${styles.expressionField}`}>
+                <span>{t.expressionLabel}</span>
+                <select value={expression} onChange={(e) => updateExpression(e.target.value)}>
+                  {EXPRESSIONS.map((item) => (
+                    <option key={item.value} value={item.value}>{pick(lang, item.label, item.labelEn)}</option>
+                  ))}
+                </select>
+              </label>
+              {COLOR_FIELDS.map((field) => (
+                <label key={field.key} className={styles.colorField}>
+                  <span>{pick(lang, field.label, field.labelEn)}</span>
+                  <input
+                    type="color"
+                    value={simColors[field.key]}
+                    onChange={(e) => updateSimColor(field.key, e.target.value)}
+                    aria-label={pick(lang, field.label, field.labelEn)}
+                  />
+                </label>
+              ))}
+            </div>
+            <div className={styles.saveHint}>{t.appearanceSavedHint}</div>
+          </details>
 
           <div className={styles.servoCard}>
             <div className={styles.cardTitle}>{t.servos}</div>

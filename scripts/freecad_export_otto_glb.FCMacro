@@ -1,0 +1,1 @@
+exec(open("/Volumes/D/Git/ottodiy-docs/scripts/freecad_export_otto_glb.py", "r", encoding="utf-8").read())

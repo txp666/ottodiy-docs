@@ -20,3 +20,9 @@ yarn-debug.log*
 yarn-error.log*
 
 .vscode
+__pycache__/
+
+# Generated model export intermediates
+static/files/models/*.FCStd
+static/files/models/*.FCBak
+static/files/models/freecad_export_otto_glb.log

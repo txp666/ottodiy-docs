@@ -67,7 +67,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 @media (max-width: 920px) { .left { position: static; } }
 
 /* ===== 仿真 ===== */
-.simCard, .servoCard, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.simCard, .appearanceCard, .servoCard, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
 .simCard { padding: 8px; }
 .simStage {
   background: radial-gradient(circle at 50% 35%, #eaf1ff 0%, #dbe6fb 70%, #c9d8f5 100%);
@@ -79,6 +79,28 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .simBtns .btnGhost { padding: 5px 10px; font-size: 12px; }
 .check { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; cursor: pointer; }
 .liveCheck { font-weight: 600; color: var(--ifm-color-primary); }
+
+/* ===== 外观 ===== */
+.appearanceCard { padding: 14px 16px; }
+.appearanceCard .cardTitle { justify-content: space-between; margin-bottom: 0; cursor: pointer; list-style: none; }
+.appearanceCard .cardTitle::-webkit-details-marker { display: none; }
+.appearanceCard[open] .cardTitle { margin-bottom: 12px; }
+.colorGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.colorField {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  min-width: 0; font-size: 12px; font-weight: 600;
+}
+.colorField span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.colorField input {
+  width: 34px; height: 28px; padding: 0; border: 1px solid var(--line);
+  border-radius: 6px; background: transparent; cursor: pointer; flex: none;
+}
+.expressionField { grid-column: 1 / -1; }
+.expressionField select {
+  min-width: 0; flex: 1; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--ifm-background-color); color: var(--ifm-font-color-base); font-size: 13px;
+}
+.saveHint { margin-top: 10px; font-size: 11px; color: var(--ifm-color-emphasis-600); }
 
 /* ===== 舵机 ===== */
 .servoCard { padding: 14px 16px; }

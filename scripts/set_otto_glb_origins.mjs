@@ -6,13 +6,14 @@ const outputPath = process.argv[3] || inputPath;
 const PIVOTS = {
   head: [0, 0, 0],
   body: [0, 0, 0],
+  body_no_hands: [0, 0, 0],
   screen: [0, 0, 0],
   left_leg: [0.0255, -0.04, 0],
   right_leg: [-0.0255, -0.04, 0],
-  left_foot: [0.036, -0.065, 0],
-  right_foot: [-0.036, -0.065, 0],
-  left_hand: [0.054, -0.013, -0.004],
-  right_hand: [-0.054, -0.013, -0.004],
+  left_foot: [0.025560148, -0.071383223, 0.023999993],
+  right_foot: [-0.025667563, -0.071516439, 0.024000015],
+  left_hand: [0.050054643, -0.006888803, 0.024999999],
+  right_hand: [-0.050259013, -0.006877573, 0.025000003],
 };
 
 const COMPONENT_FLOAT = 5126;
@@ -48,28 +49,18 @@ function getAccessorView(json, accessorIndex) {
   };
 }
 
-const input = fs.readFileSync(inputPath);
-if (input.readUInt32LE(0) !== GLB_MAGIC) throw new Error('Input is not a GLB file');
+function collectMeshNodeIndexes(json, nodeIndex, collected = new Set()) {
+  const node = json.nodes[nodeIndex];
+  if (!node) return collected;
+  if (node.mesh != null) collected.add(nodeIndex);
+  for (const childIndex of node.children || []) collectMeshNodeIndexes(json, childIndex, collected);
+  return collected;
+}
 
-const jsonChunk = readChunk(input, 12);
-if (jsonChunk.type !== JSON_CHUNK) throw new Error('Missing JSON chunk');
-const binChunk = readChunk(input, jsonChunk.end);
-if (binChunk.type !== BIN_CHUNK) throw new Error('Missing BIN chunk');
-
-const jsonText = input.subarray(jsonChunk.start, jsonChunk.end).toString('utf8').trimEnd();
-const json = JSON.parse(jsonText);
-const bin = Buffer.from(input.subarray(binChunk.start, binChunk.end));
-
-for (const [nodeIndex, node] of json.nodes.entries()) {
-  const pivot = PIVOTS[node.name];
-  if (!pivot || node.mesh == null) continue;
-
+function shiftMeshGeometry(json, bin, nodeIndex, pivot) {
+  const node = json.nodes[nodeIndex];
   const mesh = json.meshes[node.mesh];
-  if (!mesh) throw new Error(`Missing mesh for node ${node.name}`);
-
-  node.translation = pivot;
-  delete node.rotation;
-  delete node.scale;
+  if (!mesh) throw new Error(`Missing mesh for node ${node.name || nodeIndex}`);
 
   for (const primitive of mesh.primitives) {
     const accessorIndex = primitive.attributes.POSITION;
@@ -91,8 +82,32 @@ for (const [nodeIndex, node] of json.nodes.entries()) {
     accessor.min = min;
     accessor.max = max;
   }
+}
 
-  console.log(`set origin ${nodeIndex}:${node.name} -> ${pivot.join(',')}`);
+const input = fs.readFileSync(inputPath);
+if (input.readUInt32LE(0) !== GLB_MAGIC) throw new Error('Input is not a GLB file');
+
+const jsonChunk = readChunk(input, 12);
+if (jsonChunk.type !== JSON_CHUNK) throw new Error('Missing JSON chunk');
+const binChunk = readChunk(input, jsonChunk.end);
+if (binChunk.type !== BIN_CHUNK) throw new Error('Missing BIN chunk');
+
+const jsonText = input.subarray(jsonChunk.start, jsonChunk.end).toString('utf8').trimEnd();
+const json = JSON.parse(jsonText);
+const bin = Buffer.from(input.subarray(binChunk.start, binChunk.end));
+
+for (const [nodeIndex, node] of json.nodes.entries()) {
+  const pivot = PIVOTS[node.name];
+  if (!pivot) continue;
+
+  node.translation = pivot;
+  delete node.rotation;
+  delete node.scale;
+
+  const meshNodeIndexes = collectMeshNodeIndexes(json, nodeIndex);
+  for (const meshNodeIndex of meshNodeIndexes) shiftMeshGeometry(json, bin, meshNodeIndex, pivot);
+
+  console.log(`set origin ${nodeIndex}:${node.name} -> ${pivot.join(',')} (${meshNodeIndexes.size} mesh node(s))`);
 }
 
 const jsonOut = Buffer.from(JSON.stringify(json), 'utf8');

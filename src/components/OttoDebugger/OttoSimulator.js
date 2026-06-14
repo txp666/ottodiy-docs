@@ -23,10 +23,12 @@ const FACE_DOM_SIZE = 240;
 const lerp = (a, b, t) => a + (b - a) * t;
 const deg = (v) => THREE.MathUtils.degToRad(v);
 
-const PARTS = ['head', 'body', 'screen', 'leftLeg', 'rightLeg', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm'];
+const PARTS = ['head', 'body', 'body_no_hands', 'screen', 'leftLeg', 'rightLeg', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm'];
+const REQUIRED_NAMED_PARTS = ['head', 'body', 'screen', 'leftLeg', 'rightLeg', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm'];
 const NAMED_PARTS = {
   head: 'head',
   body: 'body',
+  body_no_hands: 'body_no_hands',
   screen: 'screen',
   left_leg: 'leftLeg',
   right_leg: 'rightLeg',
@@ -55,7 +57,7 @@ const MATERIAL_PARAMS = {
 
 function createMaterial(part) {
   if (part === 'screen') return MATERIAL_PARAMS.screen.clone();
-  return (part === 'body' || part === 'head' ? MATERIAL_PARAMS.body : MATERIAL_PARAMS.limb).clone();
+  return (part === 'body' || part === 'body_no_hands' || part === 'head' ? MATERIAL_PARAMS.body : MATERIAL_PARAMS.limb).clone();
 }
 
 function normalizeColors(colors = {}) {
@@ -67,7 +69,7 @@ function applyVisualSettings(root, scene, colors = {}) {
   scene.background = new THREE.Color(resolved.background);
   root.traverse((object) => {
     if (!object.isMesh || !object.userData.part || !object.material) return;
-    const color = resolved[object.userData.part];
+    const color = resolved[object.userData.colorPart || object.userData.part];
     if (color && object.material.color) object.material.color.set(color);
   });
 }
@@ -341,14 +343,21 @@ function addPivot(parent, mesh, pivot) {
 }
 
 function countTriangles(mesh) {
-  const geometry = mesh.geometry;
-  if (!geometry) return 0;
-  return geometry.index ? geometry.index.count / 3 : geometry.getAttribute('position').count / 3;
+  let total = 0;
+  mesh.traverse((object) => {
+    const geometry = object.geometry;
+    if (!object.isMesh || !geometry) return;
+    total += geometry.index ? geometry.index.count / 3 : geometry.getAttribute('position').count / 3;
+  });
+  return total;
 }
 
-function makeMergedPartMesh(node, part) {
+function makePartObject(node, part) {
   node.updateWorldMatrix(true, true);
-  const geometries = [];
+  const group = new THREE.Group();
+  group.name = part;
+  const colorPart = part === 'body_no_hands' ? 'body' : part;
+  let meshIndex = 0;
 
   node.traverse((child) => {
     if (!child.isMesh || !child.geometry) return;
@@ -361,27 +370,28 @@ function makeMergedPartMesh(node, part) {
 
     geometry.applyMatrix4(child.matrixWorld);
     if (!geometry.getAttribute('normal')) geometry.computeVertexNormals();
-    geometries.push(geometry);
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+
+    const mesh = new THREE.Mesh(geometry, createMaterial(part));
+    mesh.name = child.name || `${part}_${meshIndex + 1}`;
+    mesh.userData.part = part;
+    mesh.userData.colorPart = colorPart;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    group.add(mesh);
+    meshIndex += 1;
   });
 
-  if (!geometries.length) return null;
+  return meshIndex ? group : null;
+}
 
-  const merged = geometries.length === 1 ? geometries[0] : mergeGeometries(geometries, false);
-  if (!merged) {
-    geometries.forEach((geometry) => geometry.dispose());
-    return null;
-  }
-
-  if (geometries.length > 1) geometries.forEach((geometry) => geometry.dispose());
-  merged.computeBoundingBox();
-  merged.computeBoundingSphere();
-
-  const mesh = new THREE.Mesh(merged, createMaterial(part));
-  mesh.name = part;
-  mesh.userData.part = part;
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
+function findFirstMesh(object) {
+  let found = null;
+  object.traverse((child) => {
+    if (!found && child.isMesh) found = child;
+  });
+  return found;
 }
 
 function buildNamedArticulatedOtto(model) {
@@ -393,26 +403,29 @@ function buildNamedArticulatedOtto(model) {
     if (part && !namedNodes[part]) namedNodes[part] = object;
   });
 
-  if (!PARTS.every((part) => namedNodes[part])) return null;
+  if (!REQUIRED_NAMED_PARTS.every((part) => namedNodes[part])) return null;
 
   const meshes = {};
   const bounds = new THREE.Box3();
   let triangleCount = 0;
 
   PARTS.forEach((part) => {
-    const mesh = makeMergedPartMesh(namedNodes[part], part);
+    if (!namedNodes[part]) return;
+    const mesh = makePartObject(namedNodes[part], part);
     if (!mesh) return;
     meshes[part] = mesh;
     bounds.expandByObject(mesh);
     triangleCount += countTriangles(mesh);
   });
 
-  if (!PARTS.every((part) => meshes[part])) return null;
+  if (!REQUIRED_NAMED_PARTS.every((part) => meshes[part])) return null;
 
   const center = bounds.getCenter(new THREE.Vector3());
   const size = bounds.getSize(new THREE.Vector3());
   const unitScale = Math.max(size.x, size.y, size.z) < 10 ? 0.001 : 1;
-  const screenBounds = meshes.screen.geometry.boundingBox.clone();
+  const screenMesh = findFirstMesh(meshes.screen);
+  if (!screenMesh) return null;
+  const screenBounds = screenMesh.geometry.boundingBox.clone();
   const pivots = {};
   ['leftLeg', 'rightLeg', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm'].forEach((part) => {
     const origin = namedNodes[part].getWorldPosition(new THREE.Vector3());
@@ -423,6 +436,7 @@ function buildNamedArticulatedOtto(model) {
 
   if (meshes.head) rig.add(meshes.head);
   if (meshes.body) rig.add(meshes.body);
+  if (meshes.body_no_hands) rig.add(meshes.body_no_hands);
   if (meshes.screen) rig.add(meshes.screen);
   joints.leftLeg = addPivot(rig, meshes.leftLeg, pivots.leftLeg);
   joints.rightLeg = addPivot(rig, meshes.rightLeg, pivots.rightLeg);
@@ -430,6 +444,8 @@ function buildNamedArticulatedOtto(model) {
   joints.rightFoot = addPivot(joints.rightLeg, meshes.rightFoot, pivots.rightFoot);
   joints.leftArm = addPivot(rig, meshes.leftArm, pivots.leftArm);
   joints.rightArm = addPivot(rig, meshes.rightArm, pivots.rightArm);
+  joints.body = meshes.body;
+  joints.bodyNoHands = meshes.body_no_hands;
 
   rig.position.sub(center);
   return {
@@ -447,7 +463,7 @@ function buildNamedArticulatedOtto(model) {
     source: 'named-glb',
     pivots,
     screenBounds,
-    screenMesh: meshes.screen,
+    screenMesh,
   };
 }
 
@@ -498,6 +514,8 @@ function disposeSourceScene(model) {
 function applyPose(joints, pose, hasHands, coordinateSystem = 'z-up') {
   const isYUp = coordinateSystem === 'y-up';
   const blenderZAxis = isYUp ? 'y' : 'z';
+  if (joints.body) joints.body.visible = hasHands || !joints.bodyNoHands;
+  if (joints.bodyNoHands) joints.bodyNoHands.visible = !hasHands;
   if (joints.leftLeg) joints.leftLeg.rotation[blenderZAxis] = deg((pose.ll - 90) * 0.45);
   if (joints.rightLeg) joints.rightLeg.rotation[blenderZAxis] = deg((90 - pose.rl) * 0.45);
   if (joints.leftFoot) joints.leftFoot.rotation[isYUp ? 'z' : 'y'] = deg((pose.lf - 90) * 0.7);
@@ -773,6 +791,8 @@ export default function OttoSimulator({
           (currentMotion.yaw || 0).toFixed(1),
           currentMotion.active ? '1' : '0',
         ].join(',');
+        renderer.domElement.dataset.ottoHands = handsRef.current ? 'on' : 'off';
+        renderer.domElement.dataset.ottoBody = handsRef.current || !joints.bodyNoHands ? 'body' : 'body_no_hands';
       }
       updateExpressionSource(expressionImage, faceTextureUrlRef.current);
       controls.update();

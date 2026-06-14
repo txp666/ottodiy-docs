@@ -29,6 +29,7 @@ const LS_APPEARANCE_OPEN = 'otto-debug-appearance-open';
 const LS_GRAVITY = 'otto-debug-gravity';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const BOTH_DIRECTION_ACTIONS = new Set(['hands_up', 'hands_down', 'hand_wave']);
 
 function readStore(key) {
   if (typeof window === 'undefined') return null;
@@ -65,6 +66,24 @@ function removeStore(key) {
   try {
     document.cookie = `${encodeURIComponent(key)}=; path=/; max-age=0; SameSite=Lax`;
   } catch (e) {}
+}
+
+function normalizeActionArgs(actionId, params) {
+  const meta = ACTIONS.find((a) => a.id === actionId);
+  const needs = new Set(meta ? meta.needs : []);
+  const args = { action: actionId };
+
+  if (needs.has('steps')) args.steps = clamp(Math.round(Number(params.steps) || 1), 1, 100);
+  if (needs.has('speed')) args.speed = clamp(Math.round(Number(params.speed) || 700), 100, 3000);
+  if (needs.has('amount')) args.amount = clamp(Math.round(Number(params.amount) || 30), 0, 170);
+  if (needs.has('arm_swing')) args.arm_swing = clamp(Math.round(Number(params.arm_swing) || 0), 0, 170);
+  if (needs.has('direction')) {
+    const raw = Number(params.direction);
+    if (BOTH_DIRECTION_ACTIONS.has(actionId)) args.direction = raw === -1 ? -1 : raw === 0 ? 0 : 1;
+    else args.direction = raw === -1 ? -1 : 1;
+  }
+
+  return args;
 }
 
 const DEFAULT_SIM_COLORS = {
@@ -131,6 +150,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const [liveMode, setLiveMode] = useState(false);
 
   const [params, setParams] = useState({ steps: 3, speed: 700, direction: 1, amount: 30, arm_swing: 50 });
+  const [activeAction, setActiveAction] = useState('walk');
 
   const [trimServo, setTrimServo] = useState('left_leg');
   const [trims, setTrims] = useState(null);
@@ -254,6 +274,8 @@ export default function OttoDebugger({ lang = 'zh' }) {
     };
     ws.onclose = () => {
       setStatus((s) => (s === 'error' ? s : 'disconnected'));
+      setBattery(null);
+      setRobotStatus(null);
       addLog('sys', t.logClosed);
     };
     ws.onerror = () => {
@@ -273,6 +295,8 @@ export default function OttoDebugger({ lang = 'zh' }) {
       wsRef.current = null;
     }
     setStatus('disconnected');
+    setBattery(null);
+    setRobotStatus(null);
   }, []);
 
   const send = useCallback((method, params2, purpose) => {
@@ -311,6 +335,18 @@ export default function OttoDebugger({ lang = 'zh' }) {
   }, []);
 
   const connected = status === 'connected';
+  const availableActions = useMemo(() => ACTIONS.filter((a) => hasHands || !a.hand), [hasHands]);
+  const activeActionMeta = useMemo(
+    () => availableActions.find((a) => a.id === activeAction) || availableActions[0] || ACTIONS[0],
+    [availableActions, activeAction],
+  );
+  const activeNeeds = useMemo(() => new Set(activeActionMeta.needs || []), [activeActionMeta]);
+
+  useEffect(() => {
+    if (!availableActions.some((a) => a.id === activeAction)) {
+      setActiveAction((availableActions[0] || ACTIONS[0]).id);
+    }
+  }, [availableActions, activeAction]);
 
   const sendLivePose = useCallback((nextPose) => {
     if (!connected || !liveMode) return;
@@ -353,10 +389,20 @@ export default function OttoDebugger({ lang = 'zh' }) {
 
   const runAction = useCallback((action) => {
     if (!connected) { addLog('err', t.logNeedConnect); return; }
-    callTool('self.otto.action', { action, ...params }, action);
+    setActiveAction(action);
+    callTool('self.otto.action', normalizeActionArgs(action, params), action);
   }, [connected, params, callTool, addLog, t]);
 
-  const stopAll = () => connected && callTool('self.otto.stop', {}, 'stop');
+  const stopAll = () => {
+    playAbortRef.current = true;
+    setPlaying(false);
+    setSimMotion({ yaw: 0, active: false });
+    setTransitionMs(300);
+    setPose({ ...HOME_POSE });
+    if (!connected) return;
+    callTool('self.otto.stop', {}, 'stop');
+    setTimeout(() => callTool('self.otto.action', { action: 'home' }, 'home'), 150);
+  };
   const queryStatus = () => connected && callTool('self.otto.get_status', {}, 'status');
 
   const applyTrim = (value) => {
@@ -412,6 +458,12 @@ export default function OttoDebugger({ lang = 'zh' }) {
 
   const playFramesLocal = useCallback(async (sourceFrames, shouldLoop = false) => {
     if (!sourceFrames.length || playing) return;
+    const waitLocal = async (ms) => {
+      const end = Date.now() + Math.max(0, ms);
+      while (Date.now() < end && !playAbortRef.current) {
+        await sleep(Math.min(30, end - Date.now()));
+      }
+    };
     setPlaying(true);
     playAbortRef.current = false;
     let cur = { ...pose };
@@ -426,7 +478,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
           setTransitionMs(f.v);
           setPose({ ...target });
           cur = target;
-          await sleep(f.v + (f.d || 0));
+          await waitLocal(f.v + (f.d || 0));
         } else {
           const start = Date.now();
           const dur = f.p * f.c;
@@ -461,7 +513,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
             if (f.amplitude[k] >= 10 || (f.previewActive && f.previewActive[k])) cur[k] = f.center[k];
           });
           setPose({ ...cur });
-          if (f.d) await sleep(f.d);
+          if (f.d) await waitLocal(f.d);
         }
       }
     } while (shouldLoop && !playAbortRef.current);
@@ -475,7 +527,8 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const stopLocal = () => { playAbortRef.current = true; setSimMotion((prev) => ({ ...prev, active: false })); setPlaying(false); };
 
   const previewAction = useCallback((action) => {
-    const previewFrames = buildActionPreviewFrames(action, params, hasHands);
+    setActiveAction(action);
+    const previewFrames = buildActionPreviewFrames(action, normalizeActionArgs(action, params), hasHands);
     playFramesLocal(previewFrames, false);
   }, [params, hasHands, playFramesLocal]);
 
@@ -643,7 +696,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
             <div className={styles.colorGrid}>
               <label className={`${styles.colorField} ${styles.expressionField}`}>
                 <span>{t.expressionLabel}</span>
-                <select value={expression} onChange={(e) => updateExpression(e.target.value)}>
+                <select value={expression} aria-label={t.expressionLabel} onChange={(e) => updateExpression(e.target.value)}>
                   {EXPRESSIONS.map((item) => (
                     <option key={item.value} value={item.value}>{pick(lang, item.label, item.labelEn)}</option>
                   ))}
@@ -699,31 +752,41 @@ export default function OttoDebugger({ lang = 'zh' }) {
 
           {tab === 'presets' && (
             <div className={styles.panel}>
+              <div className={styles.paramHeader}>
+                <span>{t.actionParams}: {pick(lang, activeActionMeta.label, activeActionMeta.labelEn)}</span>
+                {activeActionMeta.hand && <span className={styles.handsBadge}><HandsIcon /></span>}
+              </div>
               <div className={styles.paramGrid}>
                 {[
                   { k: 'steps', label: t.pSteps, min: 1, max: 100 },
                   { k: 'speed', label: t.pSpeed, min: 100, max: 3000 },
                   { k: 'amount', label: t.pAmount, min: 0, max: 170 },
                   { k: 'arm_swing', label: t.pArmSwing, min: 0, max: 170 },
-                ].map((c) => (
+                ].filter((c) => activeNeeds.has(c.k)).map((c) => (
                   <label key={c.k} className={styles.paramField}>
                     <span>{c.label}</span>
                     <input type="number" min={c.min} max={c.max} value={params[c.k]}
+                      aria-label={c.label}
                       onChange={(e) => setParams((p) => ({ ...p, [c.k]: clamp(Number(e.target.value), c.min, c.max) }))} />
                   </label>
                 ))}
-                <label className={styles.paramField}>
+                {activeNeeds.has('direction') && <label className={styles.paramField}>
                   <span>{t.pDirection}</span>
-                  <select value={params.direction} onChange={(e) => setParams((p) => ({ ...p, direction: Number(e.target.value) }))}>
+                  <select
+                    value={BOTH_DIRECTION_ACTIONS.has(activeActionMeta.id) ? params.direction : (params.direction === -1 ? -1 : 1)}
+                    aria-label={t.pDirection}
+                    onChange={(e) => setParams((p) => ({ ...p, direction: Number(e.target.value) }))}
+                  >
                     <option value={1}>{t.dirFwd}</option>
                     <option value={-1}>{t.dirBack}</option>
-                    <option value={0}>{t.dirBoth}</option>
+                    {BOTH_DIRECTION_ACTIONS.has(activeActionMeta.id) && <option value={0}>{t.dirBoth}</option>}
                   </select>
-                </label>
+                </label>}
+                {!activeActionMeta.needs.length && <div className={styles.paramEmpty}>{t.noActionParams}</div>}
               </div>
               <div className={styles.actionGrid}>
-                {ACTIONS.filter((a) => hasHands || !a.hand).map((a) => (
-                  <div key={a.id} className={styles.actionCard}>
+                {availableActions.map((a) => (
+                  <div key={a.id} className={`${styles.actionCard} ${activeActionMeta.id === a.id ? styles.actionCardActive : ''}`}>
                     <button className={styles.actionPreviewBtn} disabled={playing} onClick={() => previewAction(a.id)}>
                       <span className={styles.actionIcon}><ActionIcon id={a.id} /></span>
                       <span>{pick(lang, a.label, a.labelEn)}</span>

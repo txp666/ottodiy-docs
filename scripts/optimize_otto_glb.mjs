@@ -22,80 +22,149 @@ if (typeof globalThis.FileReader === 'undefined') {
   };
 }
 
-const namedParts = {
-  head: 'head',
-  body: 'body',
-  screen: 'screen',
-  left_leg: 'left_leg',
-  right_leg: 'right_leg',
-  left_foot: 'left_foot',
-  right_foot: 'right_foot',
-  left_hand: 'left_hand',
-  right_hand: 'right_hand',
-};
+const PARTS = [
+  'head',
+  'body',
+  'body_no_hands',
+  'screen',
+  'left_leg',
+  'right_leg',
+  'left_foot',
+  'right_foot',
+  'left_hand',
+  'right_hand',
+];
 
 const normalizeName = (name = '') => name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
 
-function findNamedNodes(scene) {
-  const found = {};
-  scene.traverse((object) => {
-    const part = namedParts[normalizeName(object.name)];
-    if (part && !found[part]) found[part] = object;
-  });
-  return found;
+function classifyName(name) {
+  const normalized = normalizeName(name);
+  if (normalized.includes('bodyarm') || normalized.includes('boot')) return 'body';
+  if (
+    normalized.startsWith('body_no_hands__')
+    || normalized.includes('body_no_hands')
+    || normalized.includes('body_noarms')
+    || normalized.includes('bodynohands')
+    || normalized.includes('body_2')
+    || normalized.startsWith('body__body')
+    || normalized === 'body'
+  ) return 'body_no_hands';
+  if (normalized.startsWith('body__')) return 'body';
+  for (const part of PARTS) {
+    if (normalized === part || normalized.startsWith(`${part}__`)) return part;
+  }
+  if (normalized.includes('lcd') || normalized.includes('screen') || normalized.includes('display')) return 'screen';
+  if (normalized.includes('head')) return 'head';
+  if (normalized.includes('leftfoot')) return 'left_foot';
+  if (normalized.includes('rightfoot')) return 'right_foot';
+  if (normalized.includes('leftleg')) return 'left_leg';
+  if (normalized.includes('rightleg')) return 'right_leg';
+  if (normalized.includes('leftarm') || normalized.includes('lefthand')) return 'left_hand';
+  if (normalized.includes('rightarm') || normalized.includes('righthand')) return 'right_hand';
+  if (normalized.includes('body')) return 'body';
+  return null;
 }
 
-function mergeNodeGeometry(node) {
-  const geometries = [];
-  node.updateWorldMatrix(true, true);
+function uniqueMeshName(part, sourceName, counts) {
+  const stem = normalizeName(sourceName).replace(/^_+|_+$/g, '') || 'part';
+  const base = stem.startsWith(`${part}__`) ? stem : `${part}__${stem}`;
+  counts[base] = (counts[base] || 0) + 1;
+  return `${base}__${String(counts[base]).padStart(2, '0')}`;
+}
 
-  node.traverse((child) => {
-    if (!child.isMesh || !child.geometry) return;
-    let geometry = child.geometry.clone();
-    if (geometry.index) geometry = geometry.toNonIndexed();
+function sourceKeyForName(name) {
+  const normalized = normalizeName(name);
+  return normalized
+    .replace(/_\d+_\d+$/, '')
+    .replace(/_\d+$/, '');
+}
 
-    Object.keys(geometry.attributes).forEach((name) => {
-      if (name !== 'position' && name !== 'normal') geometry.deleteAttribute(name);
-    });
+function sourceNameForMesh(mesh) {
+  let current = mesh;
+  while (current) {
+    const normalized = normalizeName(current.name);
+    if (normalized && !PARTS.includes(normalized)) return current.name;
+    current = current.parent;
+  }
+  return mesh.name;
+}
 
-    geometry.applyMatrix4(child.matrixWorld);
-    if (!geometry.getAttribute('normal')) geometry.computeVertexNormals();
-    geometries.push(geometry);
+function cloneWorldGeometry(mesh) {
+  let geometry = mesh.geometry.clone();
+  if (geometry.index) geometry = geometry.toNonIndexed();
+
+  Object.keys(geometry.attributes).forEach((attribute) => {
+    if (attribute !== 'position' && attribute !== 'normal') geometry.deleteAttribute(attribute);
   });
 
-  if (!geometries.length) return null;
-  const merged = geometries.length === 1 ? geometries[0] : mergeGeometries(geometries, false);
-  if (geometries.length > 1) geometries.forEach((geometry) => geometry.dispose());
-  if (!merged) return null;
-  merged.computeBoundingBox();
-  merged.computeBoundingSphere();
-  return merged;
+  mesh.updateWorldMatrix(true, false);
+  geometry.applyMatrix4(mesh.matrixWorld);
+  if (!geometry.getAttribute('normal')) geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function materialForPart(part) {
+  return new THREE.MeshStandardMaterial({
+    color: part === 'screen' ? 0x05070d : 0xf0f2f5,
+    roughness: part === 'screen' ? 0.5 : 0.62,
+    metalness: 0.03,
+  });
+}
+
+function mergedMeshFromSource(source, name) {
+  const geometries = source.meshes.map(cloneWorldGeometry);
+  const geometry = geometries.length === 1 ? geometries[0] : mergeGeometries(geometries, false);
+  if (!geometry) throw new Error(`Failed to merge source mesh ${name}`);
+  if (geometries.length > 1) geometries.forEach((item) => item.dispose());
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+
+  const clone = new THREE.Mesh(geometry, materialForPart(source.part));
+  clone.name = name;
+  clone.userData.part = source.part;
+  return clone;
 }
 
 const input = fs.readFileSync(inputPath);
 const arrayBuffer = input.buffer.slice(input.byteOffset, input.byteOffset + input.byteLength);
 const gltf = await new Promise((resolve, reject) => new GLTFLoader().parse(arrayBuffer, '', resolve, reject));
-const nodes = findNamedNodes(gltf.scene);
-
-const missing = Object.values(namedParts).filter((part) => !nodes[part]);
-if (missing.length) {
-  throw new Error(`Missing required part nodes: ${missing.join(', ')}`);
-}
 
 const scene = new THREE.Scene();
-scene.name = 'otto_grouped';
-const material = new THREE.MeshStandardMaterial({
-  color: 0xf0f2f5,
-  roughness: 0.62,
-  metalness: 0.03,
+scene.name = 'otto_grouped_parts';
+const groups = Object.fromEntries(PARTS.map((part) => {
+  const group = new THREE.Group();
+  group.name = part;
+  scene.add(group);
+  return [part, group];
+}));
+const counts = {};
+const sources = new Map();
+
+gltf.scene.updateWorldMatrix(true, true);
+gltf.scene.traverse((object) => {
+  if (!object.isMesh || !object.geometry) return;
+  const sourceName = sourceNameForMesh(object);
+  const part = classifyName(sourceName) || classifyName(object.name);
+  if (!part) {
+    console.warn(`skipping unclassified mesh: ${object.name}`);
+    return;
+  }
+  const sourceKey = `${part}:${sourceKeyForName(sourceName)}`;
+  if (!sources.has(sourceKey)) sources.set(sourceKey, { part, sourceName, meshes: [] });
+  sources.get(sourceKey).meshes.push(object);
 });
 
-for (const part of Object.values(namedParts)) {
-  const geometry = mergeNodeGeometry(nodes[part]);
-  if (!geometry) throw new Error(`No geometry found for ${part}`);
-  const mesh = new THREE.Mesh(geometry, material.clone());
-  mesh.name = part;
-  scene.add(mesh);
+for (const source of sources.values()) {
+  const mesh = mergedMeshFromSource(source, uniqueMeshName(source.part, source.sourceName, counts));
+  groups[source.part].add(mesh);
+}
+
+const requiredParts = PARTS.filter((part) => part !== 'body_no_hands');
+const missing = requiredParts.filter((part) => groups[part].children.length === 0);
+if (missing.length) {
+  throw new Error(`Missing required part groups: ${missing.join(', ')}`);
 }
 
 const result = await new Promise((resolve, reject) => {
@@ -107,10 +176,11 @@ const result = await new Promise((resolve, reject) => {
       binary: true,
       forcePowerOfTwoTextures: false,
       includeCustomExtensions: false,
-      trs: false,
+      trs: true,
     }
   );
 });
 
 fs.writeFileSync(outputPath, Buffer.from(result));
+for (const part of PARTS) console.log(`${part}: ${groups[part].children.length} mesh(es)`);
 console.log(`optimized ${inputPath} -> ${outputPath}`);

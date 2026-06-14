@@ -41,6 +41,8 @@ const MESSAGES = {
     dirFwd: '前 / 左',
     dirBack: '后 / 右',
     dirBoth: '双侧',
+    actionParams: '动作参数',
+    noActionParams: '此动作无需参数',
 
     stopReset: '急停并复位',
     queryStatus: '查询状态',
@@ -138,6 +140,8 @@ const MESSAGES = {
     dirFwd: 'Fwd / Left',
     dirBack: 'Back / Right',
     dirBoth: 'Both',
+    actionParams: 'Action params',
+    noActionParams: 'This move has no parameters',
 
     stopReset: 'Stop & home',
     queryStatus: 'Query status',

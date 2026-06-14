@@ -3,7 +3,6 @@ import re
 
 import FreeCAD
 import Import
-import Part
 
 try:
     import ImportGui
@@ -20,6 +19,7 @@ LOG_FILE = "/Volumes/D/Git/ottodiy-docs/static/files/models/freecad_export_otto_
 GROUPS = (
     "head",
     "body",
+    "body_no_hands",
     "screen",
     "left_leg",
     "right_leg",
@@ -44,6 +44,12 @@ def normalize_name(value):
     return re.sub(r"[^a-z0-9]+", "", (value or "").lower())
 
 
+def safe_name(value):
+    name = re.sub(r"[^A-Za-z0-9_]+", "_", (value or "").strip())
+    name = re.sub(r"_+", "_", name).strip("_")
+    return name or "part"
+
+
 def classify_by_name(obj):
     key = normalize_name(f"{getattr(obj, 'Label', '')} {getattr(obj, 'Name', '')}")
 
@@ -51,7 +57,11 @@ def classify_by_name(obj):
         return "head"
     if any(token in key for token in ("screen", "lcd", "display")):
         return "screen"
-    if any(token in key for token in ("sw1", "body")):
+    if "bodyarm" in key:
+        return "body"
+    if any(token in key for token in ("bodynoarms", "bodynohands", "body2", "body")):
+        return "body_no_hands"
+    if "sw1" in key or "boot" in key:
         return "body"
     if "leftfoot" in key:
         return "left_foot"
@@ -68,7 +78,7 @@ def classify_by_name(obj):
     return None
 
 
-def collect_shapes(obj, buckets):
+def collect_parts(obj, parts):
     shape = getattr(obj, "Shape", None)
     if not shape or shape.isNull():
         return
@@ -81,7 +91,12 @@ def collect_shapes(obj, buckets):
     )
     if not named_group:
         return
-    buckets[named_group].append(shape.copy())
+    parts.append({
+        "group": named_group,
+        "shape": shape.copy(),
+        "source_name": getattr(obj, "Name", ""),
+        "source_label": getattr(obj, "Label", ""),
+    })
 
 
 def main():
@@ -97,29 +112,39 @@ def main():
     doc.recompute()
     log(f"imported objects: {len(doc.Objects)}")
 
-    buckets = {name: [] for name in GROUPS}
+    parts = []
     for obj in list(doc.Objects):
-        collect_shapes(obj, buckets)
-    log("bucket counts: " + ", ".join(f"{k}={len(v)}" for k, v in buckets.items()))
+        collect_parts(obj, parts)
+    counts = {name: 0 for name in GROUPS}
+    for part in parts:
+        counts[part["group"]] += 1
+    log("part counts: " + ", ".join(f"{k}={v}" for k, v in counts.items()))
 
-    grouped = []
-    for name in GROUPS:
-        if not buckets[name]:
-            FreeCAD.Console.PrintWarning(f"No shapes classified for {name}\n")
-            continue
-        feature = doc.addObject("Part::Feature", name)
-        feature.Label = name
-        feature.Shape = Part.makeCompound(buckets[name])
+    exported = []
+    used_names = {}
+    for index, part in enumerate(parts, start=1):
+        group = part["group"]
+        source = safe_name(part["source_label"] or part["source_name"])
+        base = f"{group}__{source}"
+        used_names[base] = used_names.get(base, 0) + 1
+        label = f"{base}__{used_names[base]:02d}"
+        feature = doc.addObject("Part::Feature", safe_name(label))
+        feature.Label = label
+        feature.Shape = part["shape"]
         try:
             feature.ViewObject.ShapeColor = (0.88, 0.89, 0.9, 1.0)
             feature.ViewObject.DisplayMode = "Shaded"
         except Exception:
             pass
-        grouped.append(feature)
-        log(f"grouped {name}: {len(buckets[name])} solids")
+        exported.append(feature)
+        log(f"export part {index}: {label}")
+
+    for name in GROUPS:
+        if counts[name] == 0:
+            FreeCAD.Console.PrintWarning(f"No shapes classified for {name}\n")
 
     for obj in list(doc.Objects):
-        if obj not in grouped:
+        if obj not in exported:
             try:
                 doc.removeObject(obj.Name)
             except Exception:
@@ -133,7 +158,7 @@ def main():
     if ImportGui is None:
         raise RuntimeError("ImportGui is not available; cannot export GLB from this FreeCAD session.")
     log(f"exporting GLB: {OUT_GLB}")
-    ImportGui.export(grouped, OUT_GLB)
+    ImportGui.export(exported, OUT_GLB)
     log(f"exported GLB: {OUT_GLB}")
     try:
         import sys

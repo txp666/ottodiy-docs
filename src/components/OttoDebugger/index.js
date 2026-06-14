@@ -26,6 +26,7 @@ const LS_CHOREOS = 'otto-debug-choreos';
 const LS_SIM_COLORS = 'otto-debug-sim-colors';
 const LS_EXPRESSION = 'otto-debug-expression';
 const LS_APPEARANCE_OPEN = 'otto-debug-appearance-open';
+const LS_GRAVITY = 'otto-debug-gravity';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -122,9 +123,11 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const [simColors, setSimColors] = useState(DEFAULT_SIM_COLORS);
   const [expression, setExpression] = useState('staticstate');
   const [appearanceOpen, setAppearanceOpen] = useState(true);
+  const [gravityEnabled, setGravityEnabled] = useState(true);
 
   const [pose, setPose] = useState({ ...HOME_POSE });
   const [transitionMs, setTransitionMs] = useState(150);
+  const [simMotion, setSimMotion] = useState({ yaw: 0, active: false });
   const [liveMode, setLiveMode] = useState(false);
 
   const [params, setParams] = useState({ steps: 3, speed: 700, direction: 1, amount: 30, arm_swing: 50 });
@@ -166,6 +169,8 @@ export default function OttoDebugger({ lang = 'zh' }) {
       if (EXPRESSIONS.some((item) => item.value === savedExpression)) setExpression(savedExpression);
       const savedAppearanceOpen = readStore(LS_APPEARANCE_OPEN);
       if (savedAppearanceOpen === '0' || savedAppearanceOpen === '1') setAppearanceOpen(savedAppearanceOpen === '1');
+      const savedGravity = readStore(LS_GRAVITY);
+      if (savedGravity === '0' || savedGravity === '1') setGravityEnabled(savedGravity === '1');
       refreshSavedNames();
     } catch (e) {}
     storageReadyRef.current = true;
@@ -190,6 +195,11 @@ export default function OttoDebugger({ lang = 'zh' }) {
     if (!storageReadyRef.current) return;
     writeStore(LS_APPEARANCE_OPEN, appearanceOpen ? '1' : '0');
   }, [appearanceOpen]);
+
+  useEffect(() => {
+    if (!storageReadyRef.current) return;
+    writeStore(LS_GRAVITY, gravityEnabled ? '1' : '0');
+  }, [gravityEnabled]);
 
   const refreshSavedNames = () => {
     try {
@@ -321,6 +331,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
 
   const resetPose = () => {
     setTransitionMs(300);
+    setSimMotion({ yaw: 0, active: false });
     setPose({ ...HOME_POSE });
     if (connected) callTool('self.otto.action', { action: 'home' }, 'home');
   };
@@ -404,6 +415,8 @@ export default function OttoDebugger({ lang = 'zh' }) {
     setPlaying(true);
     playAbortRef.current = false;
     let cur = { ...pose };
+    let motion = { yaw: 0, active: true };
+    setSimMotion(motion);
     do {
       for (const f of sourceFrames) {
         if (playAbortRef.current) break;
@@ -417,9 +430,13 @@ export default function OttoDebugger({ lang = 'zh' }) {
         } else {
           const start = Date.now();
           const dur = f.p * f.c;
+          let lastTick = start;
           setTransitionMs(0);
           while (Date.now() - start < dur && !playAbortRef.current) {
-            const tt = (Date.now() - start) / f.p;
+            const now = Date.now();
+            const tt = (now - start) / f.p;
+            const tickMs = Math.max(0, now - lastTick);
+            lastTick = now;
             const next = { ...cur };
             SERVO_KEYS.forEach((k) => {
               if (f.amplitude[k] >= 10) {
@@ -430,6 +447,14 @@ export default function OttoDebugger({ lang = 'zh' }) {
               }
             });
             setPose(next);
+            if (f.previewMotion) {
+              motion = {
+                ...motion,
+                yaw: motion.yaw + (f.previewMotion.yawDegPerCycle || 0) * (tickMs / f.p),
+                active: true,
+              };
+              setSimMotion(motion);
+            }
             await sleep(30);
           }
           SERVO_KEYS.forEach((k) => {
@@ -440,13 +465,14 @@ export default function OttoDebugger({ lang = 'zh' }) {
         }
       }
     } while (shouldLoop && !playAbortRef.current);
+    setSimMotion((prev) => ({ ...prev, active: false }));
     setPlaying(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, pose]);
 
   const playLocal = useCallback(() => playFramesLocal(frames, loopPlay), [frames, loopPlay, playFramesLocal]);
 
-  const stopLocal = () => { playAbortRef.current = true; setPlaying(false); };
+  const stopLocal = () => { playAbortRef.current = true; setSimMotion((prev) => ({ ...prev, active: false })); setPlaying(false); };
 
   const previewAction = useCallback((action) => {
     const previewFrames = buildActionPreviewFrames(action, params, hasHands);
@@ -583,11 +609,16 @@ export default function OttoDebugger({ lang = 'zh' }) {
                 transitionMs={transitionMs}
                 colors={simColors}
                 faceTextureUrl={(EXPRESSIONS.find((item) => item.value === expression) || EXPRESSIONS[0]).url}
+                gravityEnabled={gravityEnabled}
+                motion={simMotion}
               />
             </div>
             <div className={styles.simBar}>
               <label className={styles.check}>
                 <input type="checkbox" checked={hasHands} onChange={(e) => setHasHands(e.target.checked)} /> {t.withHands}
+              </label>
+              <label className={styles.check}>
+                <input type="checkbox" checked={gravityEnabled} onChange={(e) => setGravityEnabled(e.target.checked)} /> {t.gravitySim}
               </label>
               <label className={`${styles.check} ${styles.liveCheck}`}>
                 <input type="checkbox" checked={liveMode} onChange={(e) => setLiveMode(e.target.checked)} /> {t.liveSync}

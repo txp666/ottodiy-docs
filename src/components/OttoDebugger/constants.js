@@ -174,7 +174,7 @@ function previewMove(pose, opts = {}) {
   );
 }
 
-function previewOsc({ amplitude = {}, center = {}, offset = {}, phase = {}, period = 700, cycles = 1, delay = 0 }) {
+function previewOsc({ amplitude = {}, center = {}, offset = {}, phase = {}, period = 700, cycles = 1, delay = 0, motion = null }) {
   const f = createOscFrame();
   f.amplitude = { ...f.amplitude, ...amplitude };
   Object.entries(offset).forEach(([key, value]) => {
@@ -190,6 +190,7 @@ function previewOsc({ amplitude = {}, center = {}, offset = {}, phase = {}, peri
     ...Object.keys(center),
     ...Object.keys(offset),
   ])].reduce((acc, key) => ({ ...acc, [key]: true }), {});
+  if (motion) f.previewMotion = motion;
   return f;
 }
 
@@ -244,6 +245,7 @@ export function buildActionPreviewFrames(action, params = {}, hasHands = true) {
         phase: { lf: -90, rf: -90 },
         period: speed,
         cycles: steps,
+        motion: { yawDegPerCycle: direction === 1 ? 24 : -24 },
       })];
       break;
 

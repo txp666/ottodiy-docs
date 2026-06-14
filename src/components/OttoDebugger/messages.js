@@ -25,6 +25,7 @@ const MESSAGES = {
     expressionLabel: '表情',
 
     servos: '舵机',
+    gravitySim: '重力模拟',
     keyboardDrive: '键盘驾驶',
     driveHint: 'W/S 前后 · A/D 转向 · J 跳 · H 复位 · 空格 急停',
 
@@ -121,6 +122,7 @@ const MESSAGES = {
     expressionLabel: 'Expression',
 
     servos: 'Servos',
+    gravitySim: 'Gravity',
     keyboardDrive: 'Keyboard drive',
     driveHint: 'W/S move · A/D turn · J jump · H home · Space stop',
 

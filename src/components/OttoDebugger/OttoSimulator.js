@@ -512,6 +512,59 @@ function applyPose(joints, pose, hasHands, coordinateSystem = 'z-up') {
   }
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getGravityTargets(pose, enabled) {
+  if (!enabled) return { lift: 0, roll: 0, pitch: 0, support: 'none' };
+
+  const leftFoot = pose.lf - 90;
+  const rightFoot = pose.rf - 90;
+  const leftLeg = pose.ll - 90;
+  const rightLeg = pose.rl - 90;
+  const footSpread = Math.abs(leftFoot) + Math.abs(rightFoot);
+  const leftFootLift = clamp(leftFoot / 70, -1, 1);
+  const rightFootLift = clamp(-rightFoot / 70, -1, 1);
+  const leftHandSupport = clamp((85 - pose.lh) / 55, 0, 1);
+  const rightHandSupport = clamp((pose.rh - 95) / 55, 0, 1);
+  const fallSide = clamp((leftFootLift - rightFootLift) * 0.9 + (leftLeg - rightLeg) / 130, -1, 1);
+  const supportingHand = fallSide > 0 ? leftHandSupport : rightHandSupport;
+  const supported = Math.abs(fallSide) > 0.16 && supportingHand > 0.35;
+  const maxRoll = supported ? 15 : 24;
+  const rollDeg = clamp(fallSide * 20 + (leftFoot - rightFoot) * 0.028 + (leftLeg - rightLeg) * 0.018, -maxRoll, maxRoll);
+  const supportCompression = supported ? supportingHand * Math.min(0.06, Math.abs(fallSide) * 0.045) : 0;
+
+  return {
+    lift: clamp(Math.abs(leftFoot - rightFoot) * 0.0008 - footSpread * 0.00055 - supportCompression, -0.12, 0.16),
+    roll: deg(rollDeg),
+    pitch: deg(clamp((leftLeg + rightLeg) * 0.02 + (leftFoot + rightFoot) * 0.018, -6, 6)),
+    support: supported ? (fallSide > 0 ? 'leftHand' : 'rightHand') : 'none',
+  };
+}
+
+function updateGravityGroup(group, state, pose, enabled) {
+  const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  const dt = Math.min(0.05, Math.max(0.001, (now - state.last) / 1000 || 0.016));
+  state.last = now;
+
+  const target = getGravityTargets(pose, enabled);
+  const spring = enabled ? 22 : 28;
+  const damping = enabled ? 8.5 : 10;
+  state.vLift += (target.lift - state.lift) * spring * dt;
+  state.vLift *= Math.exp(-damping * dt);
+  state.lift += state.vLift;
+
+  const ease = 1 - Math.exp(-(enabled ? 10 : 14) * dt);
+  state.roll = lerp(state.roll, target.roll, ease);
+  state.pitch = lerp(state.pitch, target.pitch, ease);
+
+  group.position.y = state.lift;
+  group.rotation.x = state.pitch;
+  group.rotation.z = state.roll;
+  return target;
+}
+
 export default function OttoSimulator({
   pose,
   hasHands = true,
@@ -519,12 +572,16 @@ export default function OttoSimulator({
   blink = true,
   colors = DEFAULT_COLORS,
   faceTextureUrl = DEFAULT_FACE_TEXTURE_URL,
+  gravityEnabled = true,
+  motion = null,
 }) {
   const wrapRef = useRef(null);
   const animRef = useRef({ from: { ...HOME }, to: { ...HOME }, start: 0, dur: 0, cur: { ...HOME } });
   const handsRef = useRef(hasHands);
   const colorsRef = useRef(normalizeColors(colors));
   const faceTextureUrlRef = useRef(faceTextureUrl);
+  const gravityEnabledRef = useRef(gravityEnabled);
+  const motionRef = useRef(motion || { yaw: 0, active: false });
 
   useEffect(() => {
     const a = animRef.current;
@@ -545,6 +602,14 @@ export default function OttoSimulator({
   useEffect(() => {
     faceTextureUrlRef.current = faceTextureUrl || DEFAULT_FACE_TEXTURE_URL;
   }, [faceTextureUrl]);
+
+  useEffect(() => {
+    gravityEnabledRef.current = gravityEnabled;
+  }, [gravityEnabled]);
+
+  useEffect(() => {
+    motionRef.current = motion || { yaw: 0, active: false };
+  }, [motion]);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -586,12 +651,15 @@ export default function OttoSimulator({
     controls.minDistance = 1;
     controls.maxDistance = 100;
 
+    const gravityGroup = new THREE.Group();
+    scene.add(gravityGroup);
     const root = new THREE.Group();
-    scene.add(root);
+    gravityGroup.add(root);
     let joints = null;
     let coordinateSystem = 'z-up';
     let ground = null;
     let screenMesh = null;
+    const gravityState = { lift: 0, vLift: 0, roll: 0, pitch: 0, last: typeof performance !== 'undefined' ? performance.now() : Date.now() };
     const expressionImage = createFaceOverlay(wrap, faceTextureUrlRef.current);
 
     const loader = new GLTFLoader();
@@ -681,6 +749,9 @@ export default function OttoSimulator({
       if (joints) {
         const currentPose = getPose(animRef.current);
         applyPose(joints, currentPose, handsRef.current, coordinateSystem);
+        const gravityTarget = updateGravityGroup(gravityGroup, gravityState, currentPose, gravityEnabledRef.current);
+        const currentMotion = motionRef.current || { yaw: 0, active: false };
+        gravityGroup.rotation.y = deg(currentMotion.yaw || 0);
         applyVisualSettings(root, scene, colorsRef.current);
         renderer.domElement.dataset.ottoPose = [
           Math.round(currentPose.ll),
@@ -689,6 +760,18 @@ export default function OttoSimulator({
           Math.round(currentPose.rf),
           Math.round(currentPose.lh),
           Math.round(currentPose.rh),
+        ].join(',');
+        renderer.domElement.dataset.ottoGravity = gravityEnabledRef.current ? 'on' : 'off';
+        renderer.domElement.dataset.ottoGravityState = [
+          gravityState.lift.toFixed(3),
+          THREE.MathUtils.radToDeg(gravityState.roll).toFixed(2),
+          THREE.MathUtils.radToDeg(gravityState.pitch).toFixed(2),
+          gravityTarget.lift.toFixed(3),
+          gravityTarget.support,
+        ].join(',');
+        renderer.domElement.dataset.ottoMotion = [
+          (currentMotion.yaw || 0).toFixed(1),
+          currentMotion.active ? '1' : '0',
         ].join(',');
       }
       updateExpressionSource(expressionImage, faceTextureUrlRef.current);

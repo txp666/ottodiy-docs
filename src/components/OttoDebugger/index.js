@@ -12,6 +12,7 @@ import {
   SERVO_TYPES_FOR_TRIM,
   WS_PATH,
   WS_PORT,
+  buildActionPreviewFrames,
   buildSequenceChunks,
   buildSingleMove,
   clamp,
@@ -398,13 +399,13 @@ export default function OttoDebugger({ lang = 'zh' }) {
     return next;
   });
 
-  const playLocal = useCallback(async () => {
-    if (!frames.length || playing) return;
+  const playFramesLocal = useCallback(async (sourceFrames, shouldLoop = false) => {
+    if (!sourceFrames.length || playing) return;
     setPlaying(true);
     playAbortRef.current = false;
     let cur = { ...pose };
     do {
-      for (const f of frames) {
+      for (const f of sourceFrames) {
         if (playAbortRef.current) break;
         if (f.type === 'move') {
           const target = { ...cur };
@@ -424,22 +425,33 @@ export default function OttoDebugger({ lang = 'zh' }) {
               if (f.amplitude[k] >= 10) {
                 const ph = (f.phase[k] || 0) * Math.PI / 180;
                 next[k] = clamp(Math.round(f.center[k] + f.amplitude[k] * Math.sin(2 * Math.PI * tt + ph)), 0, 180);
+              } else if (f.previewActive && f.previewActive[k]) {
+                next[k] = clamp(Math.round(f.center[k]), 0, 180);
               }
             });
             setPose(next);
             await sleep(30);
           }
-          SERVO_KEYS.forEach((k) => { if (f.amplitude[k] >= 10) cur[k] = f.center[k]; });
+          SERVO_KEYS.forEach((k) => {
+            if (f.amplitude[k] >= 10 || (f.previewActive && f.previewActive[k])) cur[k] = f.center[k];
+          });
           setPose({ ...cur });
           if (f.d) await sleep(f.d);
         }
       }
-    } while (loopPlay && !playAbortRef.current);
+    } while (shouldLoop && !playAbortRef.current);
     setPlaying(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frames, playing, pose, loopPlay]);
+  }, [playing, pose]);
+
+  const playLocal = useCallback(() => playFramesLocal(frames, loopPlay), [frames, loopPlay, playFramesLocal]);
 
   const stopLocal = () => { playAbortRef.current = true; setPlaying(false); };
+
+  const previewAction = useCallback((action) => {
+    const previewFrames = buildActionPreviewFrames(action, params, hasHands);
+    playFramesLocal(previewFrames, false);
+  }, [params, hasHands, playFramesLocal]);
 
   const sendChoreography = useCallback(async () => {
     if (!connected) { addLog('err', t.logNeedConnect); return; }
@@ -680,13 +692,17 @@ export default function OttoDebugger({ lang = 'zh' }) {
               </div>
               <div className={styles.actionGrid}>
                 {ACTIONS.filter((a) => hasHands || !a.hand).map((a) => (
-                  <button key={a.id} className={styles.actionBtn} disabled={!connected} onClick={() => runAction(a.id)}>
-                    <span className={styles.actionIcon}><ActionIcon id={a.id} /></span>
-                    <span>{pick(lang, a.label, a.labelEn)}</span>
-                  </button>
+                  <div key={a.id} className={styles.actionCard}>
+                    <button className={styles.actionPreviewBtn} disabled={playing} onClick={() => previewAction(a.id)}>
+                      <span className={styles.actionIcon}><ActionIcon id={a.id} /></span>
+                      <span>{pick(lang, a.label, a.labelEn)}</span>
+                    </button>
+                    <button className={styles.actionRunBtn} disabled={!connected} onClick={() => runAction(a.id)}>{t.sendRobot}</button>
+                  </div>
                 ))}
               </div>
               <div className={styles.quickRow}>
+                <button className={styles.btnGhost} disabled={!playing} onClick={stopLocal}>{t.stopPreview}</button>
                 <button className={styles.btnDanger} disabled={!connected} onClick={stopAll}>{t.stopReset}</button>
                 <button className={styles.btnGhost} disabled={!connected} onClick={queryStatus}>{t.queryStatus}</button>
                 {robotStatus && <span className={styles.fw}>{t.statusLabel}: {robotStatus}</span>}

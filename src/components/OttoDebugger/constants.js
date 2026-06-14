@@ -158,6 +158,330 @@ export function buildSingleMove(pose, v = 400) {
   return JSON.stringify({ a: [{ s, v: clamp(Math.round(v), 100, 3000) }] });
 }
 
+const HAND_HOME = 45;
+const MIRROR_HAND_HOME = 180 - HAND_HOME;
+const FULL_BODY = { ll: true, rl: true, lf: true, rf: true, lh: true, rh: true };
+const LEGS_ONLY = { ll: true, rl: true, lf: true, rf: true, lh: false, rh: false };
+
+const deg = (value) => value;
+const signedCenter = (offset) => clamp(90 + offset, 0, 180);
+
+function previewMove(pose, opts = {}) {
+  const enabled = opts.enabled || (opts.hasHands === false ? LEGS_ONLY : FULL_BODY);
+  return createMoveFrame(
+    { ...HOME_POSE, ...pose },
+    { enabled, v: opts.v ?? 500, d: opts.d ?? 0 },
+  );
+}
+
+function previewOsc({ amplitude = {}, center = {}, offset = {}, phase = {}, period = 700, cycles = 1, delay = 0 }) {
+  const f = createOscFrame();
+  f.amplitude = { ...f.amplitude, ...amplitude };
+  Object.entries(offset).forEach(([key, value]) => {
+    f.center[key] = signedCenter(value);
+  });
+  f.center = { ...f.center, ...center };
+  f.phase = { ...f.phase, ...phase };
+  f.p = clamp(Math.round(period), 100, 3000);
+  f.c = Math.max(0.1, Number(cycles) || 1);
+  f.d = Math.max(0, Math.round(delay));
+  f.previewActive = [...new Set([
+    ...Object.keys(amplitude),
+    ...Object.keys(center),
+    ...Object.keys(offset),
+  ])].reduce((acc, key) => ({ ...acc, [key]: true }), {});
+  return f;
+}
+
+function previewHome(hasHands, handsDown = true) {
+  return previewMove(HOME_POSE, {
+    hasHands,
+    enabled: { ...LEGS_ONLY, lh: hasHands && handsDown, rh: hasHands && handsDown },
+    v: 700,
+  });
+}
+
+function withAutoHome(frames, action, hasHands) {
+  if (action === 'sit' || action === 'home') return frames;
+  if (action === 'hands_up') return [...frames, previewHome(hasHands, false)];
+  return [...frames, previewHome(hasHands, true)];
+}
+
+export function buildActionPreviewFrames(action, params = {}, hasHands = true) {
+  const steps = clamp(Math.round(Number(params.steps) || 1), 1, 100);
+  const speed = clamp(Math.round(Number(params.speed) || 700), 100, 3000);
+  const amount = clamp(Math.round(Number(params.amount) || 30), 0, 170);
+  const armSwing = clamp(Math.round(Number(params.arm_swing) || 0), 0, 170);
+  const rawDirection = Number(params.direction);
+  const direction = Number.isFinite(rawDirection) ? rawDirection : 1;
+  const handsEnabled = hasHands === true;
+  const handAmp = handsEnabled && armSwing > 0 ? armSwing : 0;
+
+  let frames = [];
+
+  switch (action) {
+    case 'walk':
+      frames = [previewOsc({
+        amplitude: { ll: 30, rl: 30, lf: 30, rf: 30, lh: handAmp, rh: handAmp },
+        offset: { lf: 5, rf: -5, lh: HAND_HOME - 90, rh: HAND_HOME },
+        phase: { lf: deg(direction * -90), rf: deg(direction * -90) },
+        period: speed,
+        cycles: steps,
+      })];
+      break;
+
+    case 'turn':
+      frames = [previewOsc({
+        amplitude: {
+          ll: direction === 1 ? 30 : 0,
+          rl: direction === 1 ? 0 : 30,
+          lf: 30,
+          rf: 30,
+          lh: handAmp,
+          rh: handAmp,
+        },
+        offset: { lf: 5, rf: -5, lh: HAND_HOME - 90, rh: HAND_HOME },
+        phase: { lf: -90, rf: -90 },
+        period: speed,
+        cycles: steps,
+      })];
+      break;
+
+    case 'jump':
+      frames = [
+        previewMove({ lf: 150, rf: 30 }, { hasHands: handsEnabled, v: speed }),
+        previewMove(HOME_POSE, { hasHands: handsEnabled, v: speed }),
+      ];
+      break;
+
+    case 'swing':
+      frames = [previewOsc({
+        amplitude: { lf: amount, rf: amount },
+        offset: { lf: amount / 2, rf: -amount / 2, lh: HAND_HOME, rh: MIRROR_HAND_HOME - 90 },
+        period: speed,
+        cycles: steps,
+      })];
+      break;
+
+    case 'moonwalk':
+      frames = [previewOsc({
+        amplitude: { lf: amount, rf: amount },
+        offset: { lf: amount / 2 + 2, rf: -amount / 2 - 2, lh: HAND_HOME, rh: MIRROR_HAND_HOME - 90 },
+        phase: { lf: -direction * 90, rf: -60 * direction + (-direction * 90) },
+        period: speed,
+        cycles: steps,
+      })];
+      break;
+
+    case 'bend': {
+      const left = direction !== -1;
+      for (let i = 0; i < steps; i++) {
+        frames.push(
+          previewMove(left ? { lf: 62, rf: 35 } : { lf: 145, rf: 120 }, { hasHands: handsEnabled, v: 400 }),
+          previewMove(left ? { lf: 62, rf: 105 } : { lf: 75, rf: 120 }, { hasHands: handsEnabled, v: 400, d: Math.round(speed * 0.8) }),
+          previewMove(HOME_POSE, { hasHands: handsEnabled, v: 500 }),
+        );
+      }
+      break;
+    }
+
+    case 'shake_leg': {
+      const left = direction === 1;
+      const p = Math.max(speed - 1000, 400);
+      const poses = left
+        ? [{ lf: 145, rf: 122 }, { lf: 60, rf: 122 }, { lf: 120, rf: 122 }]
+        : [{ lf: 58, rf: 35 }, { lf: 58, rf: 120 }, { lf: 58, rf: 60 }];
+      for (let i = 0; i < steps; i++) {
+        frames.push(
+          previewMove(poses[0], { hasHands: handsEnabled, v: 500 }),
+          previewMove(poses[1], { hasHands: handsEnabled, v: 500 }),
+          previewMove(poses[2], { hasHands: handsEnabled, v: p / 4 }),
+          previewMove(poses[1], { hasHands: handsEnabled, v: p / 4 }),
+          previewMove(poses[2], { hasHands: handsEnabled, v: p / 4 }),
+          previewMove(poses[1], { hasHands: handsEnabled, v: p / 4 }),
+          previewMove(HOME_POSE, { hasHands: handsEnabled, v: 500 }),
+        );
+      }
+      break;
+    }
+
+    case 'updown':
+      frames = [previewOsc({
+        amplitude: { lf: amount, rf: amount },
+        offset: { lf: amount, rf: -amount, lh: HAND_HOME, rh: MIRROR_HAND_HOME - 90 },
+        phase: { lf: -90, rf: 90 },
+        period: speed,
+        cycles: steps,
+      })];
+      break;
+
+    case 'whirlwind_leg':
+      frames = [
+        previewMove({ lf: 180, rf: 90, lh: 45, rh: 20 }, { hasHands: handsEnabled, v: 100 }),
+        previewMove({ lf: 180, rf: 160, lh: 45, rh: 20 }, { hasHands: handsEnabled, v: 500, d: 1000 }),
+        previewOsc({
+          amplitude: { ll: amount, lh: amount },
+          center: { ll: 90, rl: 90, lf: 180, rf: 160, lh: 45, rh: 20 },
+          phase: { ll: 20, lh: 20 },
+          period: speed,
+          cycles: steps,
+        }),
+      ];
+      break;
+
+    case 'sit':
+      frames = [previewMove({ ll: 120, rl: 60, lf: 0, rf: 180, lh: 45, rh: 135 }, { hasHands: handsEnabled, v: 600 })];
+      break;
+
+    case 'showcase':
+      frames = [
+        ...buildActionPreviewFrames('walk', { steps: 3, speed: 1000, direction: 1, arm_swing: 50 }, handsEnabled),
+        ...(handsEnabled ? buildActionPreviewFrames('hand_wave', { direction: 1 }, true) : []),
+        ...(handsEnabled ? buildActionPreviewFrames('radio_calisthenics', {}, true) : []),
+        ...buildActionPreviewFrames('moonwalk', { steps: 3, speed: 900, direction: 1, amount: 25 }, handsEnabled),
+        ...buildActionPreviewFrames('swing', { steps: 3, speed: 1000, amount: 30 }, handsEnabled),
+        ...(handsEnabled ? buildActionPreviewFrames('takeoff', { steps: 5, speed: 300, amount: 40 }, true) : []),
+        ...(handsEnabled ? buildActionPreviewFrames('fitness', { steps: 5, speed: 1000, amount: 25 }, true) : []),
+        ...buildActionPreviewFrames('walk', { steps: 3, speed: 1000, direction: -1, arm_swing: 50 }, handsEnabled),
+      ];
+      return frames;
+
+    case 'hands_up':
+      frames = [previewMove({ lh: direction === -1 ? HOME_POSE.lh : 170, rh: direction === 1 ? HOME_POSE.rh : 10 }, {
+        enabled: { ...LEGS_ONLY, lh: handsEnabled && direction !== -1, rh: handsEnabled && direction !== 1 },
+        v: speed,
+      })];
+      break;
+
+    case 'hands_down':
+      frames = [previewMove(HOME_POSE, {
+        enabled: { ...LEGS_ONLY, lh: handsEnabled && direction !== -1, rh: handsEnabled && direction !== 1 },
+        v: speed,
+      })];
+      break;
+
+    case 'hand_wave':
+      if (direction === -1) {
+        frames = [previewOsc({
+          amplitude: { rh: 20 },
+          center: { lh: 45, rh: 20 },
+          phase: { rh: 90 },
+          period: 300,
+          cycles: 5,
+        })];
+      } else if (direction === 0) {
+        frames = [previewOsc({
+          amplitude: { lh: 20, rh: 20 },
+          center: { lh: 160, rh: 20 },
+          phase: { lh: 90, rh: 90 },
+          period: 300,
+          cycles: 5,
+        })];
+      } else {
+        frames = [previewOsc({
+          amplitude: { lh: 20 },
+          center: { lh: 160, rh: 135 },
+          phase: { lh: 90 },
+          period: 300,
+          cycles: 5,
+        })];
+      }
+      break;
+
+    case 'windmill':
+      frames = [previewOsc({
+        amplitude: { lh: amount, rh: amount },
+        center: { lh: 90, rh: 90 },
+        phase: { lh: 90, rh: 90 },
+        period: speed,
+        cycles: steps,
+      })];
+      break;
+
+    case 'takeoff':
+      frames = [
+        previewHome(handsEnabled, true),
+        previewOsc({
+          amplitude: { lh: amount, rh: amount },
+          center: { lh: 90, rh: 90 },
+          phase: { lh: 90, rh: -90 },
+          period: speed,
+          cycles: steps,
+        }),
+      ];
+      break;
+
+    case 'fitness':
+      frames = [
+        previewMove({ rf: 0, lf: 90, lh: 160, rh: 135 }, { hasHands: handsEnabled, v: 100 }),
+        previewMove({ rf: 0, lf: 20, lh: 160, rh: 135 }, { hasHands: handsEnabled, v: 400, d: 2000 }),
+        previewOsc({
+          amplitude: { rh: amount },
+          center: { ll: 90, rl: 90, lf: 20, rf: 90, lh: 160, rh: 135 },
+          period: speed,
+          cycles: steps,
+        }),
+      ];
+      break;
+
+    case 'greeting':
+      if (direction === -1) {
+        frames = [
+          previewMove({ lf: 30, rf: 30 }, { hasHands: handsEnabled, v: 400 }),
+          previewOsc({ amplitude: { rh: 20 }, center: { lf: 30, rf: 30, lh: 45, rh: 20 }, period: 300, cycles: steps }),
+        ];
+      } else {
+        frames = [
+          previewMove({ lf: 150, rf: 150 }, { hasHands: handsEnabled, v: 400 }),
+          previewOsc({ amplitude: { lh: 20 }, center: { lf: 150, rf: 150, lh: 160, rh: 135 }, period: 300, cycles: steps }),
+        ];
+      }
+      break;
+
+    case 'shy':
+      if (direction === -1) {
+        frames = [
+          previewMove({ lf: 30, rf: 30 }, { hasHands: handsEnabled, v: 400 }),
+          previewOsc({ amplitude: { rh: 20 }, center: { lf: 30, rf: 30, lh: 45, rh: 135 }, phase: { lh: 90, rh: -90 }, period: 300, cycles: steps }),
+        ];
+      } else {
+        frames = [
+          previewMove({ lf: 150, rf: 150 }, { hasHands: handsEnabled, v: 400 }),
+          previewOsc({ amplitude: { lh: 20, rh: 20 }, center: { lf: 150, rf: 150, lh: 45, rh: 135 }, phase: { lh: 90, rh: -90 }, period: 300, cycles: steps }),
+        ];
+      }
+      break;
+
+    case 'radio_calisthenics':
+      frames = [
+        previewOsc({ amplitude: { lh: 45, rh: 45 }, center: { lh: 145, rh: 45 }, phase: { lh: 90, rh: -90 }, period: 1000, cycles: 8 }),
+        previewOsc({ amplitude: { lf: 25, rf: 25 }, center: { lf: 115, rf: 65 }, phase: { lf: 90, rf: -90 }, period: 1000, cycles: 8 }),
+        previewOsc({ amplitude: { lh: 20 }, center: { lf: 130, rf: 130, lh: 90, rh: 90 }, period: 1000, cycles: 8 }),
+        previewOsc({ amplitude: { rh: 20 }, center: { lf: 50, rf: 50, lh: 90, rh: 90 }, period: 1000, cycles: 8 }),
+      ];
+      break;
+
+    case 'magic_circle':
+      frames = [previewOsc({
+        amplitude: { ll: 30, rl: 30, lf: 30, rf: 30, lh: 50, rh: 50 },
+        offset: { lf: 5, rf: -5 },
+        phase: { lf: -90, rf: -90, lh: -90, rh: 90 },
+        period: 700,
+        cycles: 40,
+      })];
+      break;
+
+    case 'home':
+      frames = [previewHome(handsEnabled, true)];
+      break;
+
+    default:
+      frames = [previewHome(handsEnabled, true)];
+  }
+
+  return withAutoHome(frames, action, handsEnabled);
+}
+
 // 趣味：内置舞蹈/动作编排预设库（纯关键帧，可本地预览，也可一键发送）
 export const DANCE_PRESETS = [
   {

@@ -133,14 +133,19 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line);
   background: var(--ifm-background-color); color: var(--ifm-font-color-base); font-size: 13px;
 }
-.actionGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 8px; }
-.actionBtn {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+.actionGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
+.actionCard {
   background: var(--ifm-color-emphasis-100); border: 1px solid var(--line); border-radius: 10px;
+  overflow: hidden; transition: all .12s ease;
+}
+.actionCard:hover { border-color: var(--ifm-color-primary); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.actionPreviewBtn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 100%; min-height: 84px;
+  background: transparent; border: none;
   padding: 10px 4px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--ifm-font-color-base);
   transition: all .12s ease;
 }
-.actionBtn:hover:not(:disabled) { border-color: var(--ifm-color-primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
 .actionIcon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 38px; height: 38px; border-radius: 10px;
@@ -149,10 +154,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border: 1px solid var(--line);
   transition: all .12s ease;
 }
-.actionBtn:hover:not(:disabled) .actionIcon {
+.actionPreviewBtn:hover:not(:disabled) .actionIcon {
   color: #fff; background: var(--ifm-color-primary); border-color: var(--ifm-color-primary);
 }
-.actionBtn:disabled .actionIcon { color: var(--ifm-color-emphasis-400); }
+.actionPreviewBtn:disabled .actionIcon { color: var(--ifm-color-emphasis-400); }
+.actionRunBtn {
+  width: 100%; border: none; border-top: 1px solid var(--line);
+  background: var(--ifm-background-surface-color); color: var(--ifm-color-primary);
+  padding: 6px 4px; cursor: pointer; font-size: 11px; font-weight: 700;
+}
+.actionRunBtn:hover:not(:disabled) { background: var(--ifm-color-primary); color: #fff; }
 .quickRow { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 
 .danceGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }

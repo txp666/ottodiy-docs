@@ -195,6 +195,41 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .danceCard .btnGhost { padding: 5px 10px; font-size: 12px; }
 
 /* ===== 校准 ===== */
+/* ===== Community sharing ===== */
+.shareHero {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  margin-bottom: 12px;
+}
+.shareHero .cardTitle { margin-bottom: 4px; }
+.shareForm {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+  margin-bottom: 12px;
+}
+.shareForm label {
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: 12px; font-weight: 600;
+}
+.shareForm input {
+  min-width: 0; padding: 7px 9px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--ifm-background-color); color: var(--ifm-font-color-base); font-size: 13px;
+}
+.shareWide { grid-column: 1 / -1; }
+.shareDivider { height: 1px; background: var(--line); margin: 16px 0; }
+.shareGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.shareCard {
+  border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+  background: var(--ifm-background-color); display: flex; flex-direction: column; gap: 8px;
+}
+.shareTitle { font-size: 14px; font-weight: 700; line-height: 1.35; }
+.shareMeta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--ifm-color-emphasis-600); }
+.shareDesc { font-size: 12px; color: var(--ifm-color-emphasis-700); line-height: 1.45; flex: 1; }
+.shareOps { display: flex; gap: 6px; flex-wrap: wrap; }
+.shareOps .btnGhost, .shareOps .btnPrimary { padding: 5px 9px; font-size: 12px; }
+@media (max-width: 640px) {
+  .shareHero { flex-direction: column; }
+  .shareForm { grid-template-columns: 1fr; }
+}
+
 .calibRow { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .calibRow .slider { flex: 1; }
 .trimGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }

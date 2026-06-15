@@ -27,6 +27,8 @@ const LS_SIM_COLORS = 'otto-debug-sim-colors';
 const LS_EXPRESSION = 'otto-debug-expression';
 const LS_APPEARANCE_OPEN = 'otto-debug-appearance-open';
 const LS_GRAVITY = 'otto-debug-gravity';
+const COMMUNITY_CHOREOS_URL = '/files/community-choreos.json';
+const COMMUNITY_SUBMIT_REPO = 'txp666/ottodiy-docs';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const BOTH_DIRECTION_ACTIONS = new Set(['hands_up', 'hands_down', 'hand_wave']);
@@ -84,6 +86,36 @@ function normalizeActionArgs(actionId, params) {
   }
 
   return args;
+}
+
+function normalizeSharedFrames(value) {
+  const frames = Array.isArray(value) ? value : value && Array.isArray(value.frames) ? value.frames : null;
+  if (!frames) return null;
+  return frames.filter((frame) => frame && (frame.type === 'move' || frame.type === 'osc'));
+}
+
+function makeSharedChoreo({ title, author, description, frames }) {
+  const now = new Date().toISOString();
+  const cleanTitle = String(title || '').trim() || `Otto choreography ${now.slice(0, 10)}`;
+  const cleanAuthor = String(author || '').trim() || 'Otto user';
+  return {
+    id: `${cleanTitle}-${cleanAuthor}-${Date.now()}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 72),
+    title: cleanTitle,
+    author: cleanAuthor,
+    description: String(description || '').trim(),
+    createdAt: now,
+    frames,
+  };
+}
+
+function downloadJson(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 const DEFAULT_SIM_COLORS = {
@@ -166,6 +198,11 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const [savedNames, setSavedNames] = useState([]);
   const [driveMode, setDriveMode] = useState(false);
   const [tab, setTab] = useState('choreo');
+  const [communityItems, setCommunityItems] = useState([]);
+  const [communityStatus, setCommunityStatus] = useState('');
+  const [shareTitle, setShareTitle] = useState('');
+  const [shareAuthor, setShareAuthor] = useState('');
+  const [shareDescription, setShareDescription] = useState('');
 
   const wsRef = useRef(null);
   const idRef = useRef(1);
@@ -192,6 +229,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
       const savedGravity = readStore(LS_GRAVITY);
       if (savedGravity === '0' || savedGravity === '1') setGravityEnabled(savedGravity === '1');
       refreshSavedNames();
+      refreshCommunityItems();
     } catch (e) {}
     storageReadyRef.current = true;
     return () => {
@@ -227,6 +265,20 @@ export default function OttoDebugger({ lang = 'zh' }) {
       setSavedNames(Object.keys(data));
     } catch (e) {
       setSavedNames([]);
+    }
+  };
+
+  const refreshCommunityItems = async () => {
+    try {
+      setCommunityStatus('');
+      const response = await fetch(COMMUNITY_CHOREOS_URL, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      const items = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
+      setCommunityItems(items.filter((item) => item && normalizeSharedFrames(item)).slice(0, 200));
+    } catch (e) {
+      setCommunityItems([]);
+      setCommunityStatus('load-failed');
     }
   };
 
@@ -579,6 +631,32 @@ export default function OttoDebugger({ lang = 'zh' }) {
     reader.readAsText(file);
     e.target.value = '';
   };
+
+  const importSharedJson = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const importedFrames = normalizeSharedFrames(data);
+        if (!importedFrames) throw new Error('invalid frames');
+        setFrames(importedFrames);
+        setSelectedId(null);
+        setTab('choreo');
+        if (data && !Array.isArray(data)) {
+          if (data.title) setShareTitle(data.title);
+          if (data.author) setShareAuthor(data.author);
+          if (data.description) setShareDescription(data.description);
+        }
+      } catch (err) {
+        addLog('err', t.logImportFail);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const saveNamed = () => {
     const name = window.prompt(t.promptSaveName);
     if (!name) return;
@@ -602,6 +680,62 @@ export default function OttoDebugger({ lang = 'zh' }) {
       writeStore(LS_CHOREOS, JSON.stringify(data));
       refreshSavedNames();
     } catch (e) {}
+  };
+
+  const buildCurrentSharedChoreo = () => makeSharedChoreo({
+    title: shareTitle,
+    author: shareAuthor,
+    description: shareDescription,
+    frames,
+  });
+
+  const exportSharedChoreo = () => {
+    if (!frames.length) return;
+    const item = buildCurrentSharedChoreo();
+    downloadJson(`${item.id || 'otto-choreography'}.json`, item);
+  };
+
+  const submitSharedChoreo = () => {
+    if (!frames.length) return;
+    const item = buildCurrentSharedChoreo();
+    const pretty = JSON.stringify(item, null, 2);
+    const body = [
+      'Please review this Otto choreography and add it to static/files/community-choreos.json.',
+      '',
+      '```json',
+      pretty,
+      '```',
+    ].join('\n');
+    downloadJson(`${item.id || 'otto-choreography'}.json`, item);
+    const url = `https://github.com/${COMMUNITY_SUBMIT_REPO}/issues/new?title=${encodeURIComponent(`[Choreo] ${item.title}`)}&body=${encodeURIComponent(body)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const loadCommunityChoreo = (item) => {
+    const sharedFrames = normalizeSharedFrames(item);
+    if (!sharedFrames) return;
+    setFrames(sharedFrames);
+    setSelectedId(null);
+    setTab('choreo');
+  };
+
+  const previewCommunityChoreo = (item) => {
+    const sharedFrames = normalizeSharedFrames(item);
+    if (sharedFrames) playFramesLocal(sharedFrames, false);
+  };
+
+  const sendCommunityChoreo = async (item) => {
+    if (!connected) { addLog('err', t.logNeedConnect); return; }
+    const sharedFrames = normalizeSharedFrames(item);
+    if (!sharedFrames) return;
+    const chunks = buildSequenceChunks(sharedFrames);
+    addLog('sys', t.logSendSeq(sharedFrames.length, chunks.length));
+    playFramesLocal(sharedFrames, false);
+    for (const chunk of chunks) {
+      callTool('self.otto.servo_sequences', { sequence: chunk }, 'seq');
+      await sleep(120);
+    }
+    setTimeout(() => callTool('self.otto.action', { action: 'home' }, 'home'), 200);
   };
 
   const seqPreview = useMemo(() => (frames.length ? buildSequenceChunks(frames) : []), [frames]);
@@ -754,6 +888,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
           <div className={styles.tabs}>
             <button className={tab === 'choreo' ? styles.tabActive : styles.tab} onClick={() => setTab('choreo')}>{t.tabChoreo}</button>
             <button className={tab === 'presets' ? styles.tabActive : styles.tab} onClick={() => setTab('presets')}>{t.tabPresets}</button>
+            <button className={tab === 'share' ? styles.tabActive : styles.tab} onClick={() => setTab('share')}>{pick(lang, '用户分享', 'Community')}</button>
             <button className={tab === 'calib' ? styles.tabActive : styles.tab} onClick={() => setTab('calib')}>{t.tabCalib}</button>
           </div>
 
@@ -853,6 +988,74 @@ export default function OttoDebugger({ lang = 'zh' }) {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {tab === 'share' && (
+            <div className={styles.panel}>
+              <div className={styles.shareHero}>
+                <div>
+                  <div className={styles.cardTitle}>{pick(lang, '上传用户编排', 'Submit choreography')}</div>
+                  <p className={styles.muted}>
+                    {pick(
+                      lang,
+                      '当前没有自建服务器，上传会生成 GitHub Issue。审核合并到公开 JSON 后，所有访问网站的人都会在这里看到。',
+                      'No custom server is required. Upload opens a GitHub issue; after review and merge into the public JSON, everyone can see it here.',
+                    )}
+                  </p>
+                </div>
+                <button className={styles.btnGhost} onClick={refreshCommunityItems}>{pick(lang, '刷新列表', 'Refresh')}</button>
+              </div>
+
+              <div className={styles.shareForm}>
+                <label>
+                  <span>{pick(lang, '动作名称', 'Title')}</span>
+                  <input value={shareTitle} onChange={(e) => setShareTitle(e.target.value)} placeholder={pick(lang, '例如：开心摇摆', 'e.g. Happy sway')} />
+                </label>
+                <label>
+                  <span>{pick(lang, '作者', 'Author')}</span>
+                  <input value={shareAuthor} onChange={(e) => setShareAuthor(e.target.value)} placeholder={pick(lang, '昵称', 'Name')} />
+                </label>
+                <label className={styles.shareWide}>
+                  <span>{pick(lang, '说明', 'Description')}</span>
+                  <input value={shareDescription} onChange={(e) => setShareDescription(e.target.value)} placeholder={pick(lang, '动作特点、适用场景或注意事项', 'What it does, when to use it, notes')} />
+                </label>
+              </div>
+
+              <div className={styles.quickRow}>
+                <button className={styles.btnPrimary} onClick={submitSharedChoreo} disabled={!frames.length}>{pick(lang, '上传当前编排', 'Submit current')}</button>
+                <button className={styles.btnGhost} onClick={exportSharedChoreo} disabled={!frames.length}>{pick(lang, '导出分享文件', 'Export share file')}</button>
+                <label className={styles.btnGhost} style={{ cursor: 'pointer' }}>
+                  {pick(lang, '导入分享文件', 'Import share file')}<input type="file" accept="application/json" hidden onChange={importSharedJson} />
+                </label>
+                {!frames.length && <span className={styles.muted}>{pick(lang, '先在“动作编排”里创建或导入动作。', 'Create or import a choreography first.')}</span>}
+              </div>
+
+              <div className={styles.shareDivider} />
+              <div className={styles.cardTitle}>{pick(lang, '用户分享板', 'Community board')}</div>
+              {communityStatus === 'load-failed' && <div className={styles.empty}>{pick(lang, '分享列表加载失败。', 'Could not load the community list.')}</div>}
+              {!communityStatus && communityItems.length === 0 && <div className={styles.empty}>{pick(lang, '暂时还没有公开分享动作。', 'No public shared choreographies yet.')}</div>}
+              <div className={styles.shareGrid}>
+                {communityItems.map((item) => {
+                  const itemFrames = normalizeSharedFrames(item) || [];
+                  return (
+                    <div key={item.id || item.title} className={styles.shareCard}>
+                      <div className={styles.shareTitle}>{item.title || pick(lang, '未命名动作', 'Untitled')}</div>
+                      <div className={styles.shareMeta}>
+                        <span>{item.author || pick(lang, '匿名', 'Anonymous')}</span>
+                        <span>{itemFrames.length}{pick(lang, ' 帧', ' frames')}</span>
+                      </div>
+                      {item.description && <div className={styles.shareDesc}>{item.description}</div>}
+                      <div className={styles.shareOps}>
+                        <button className={styles.btnGhost} onClick={() => previewCommunityChoreo(item)}>{t.preview}</button>
+                        <button className={styles.btnGhost} onClick={() => loadCommunityChoreo(item)}>{t.loadPreset}</button>
+                        <button className={styles.btnPrimary} disabled={!connected} onClick={() => sendCommunityChoreo(item)}>{t.sendRobot}</button>
+                        <button className={styles.btnGhost} onClick={() => downloadJson(`${item.id || 'otto-choreography'}.json`, item)}>{t.exportJson}</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 

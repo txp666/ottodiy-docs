@@ -516,10 +516,10 @@ function applyPose(joints, pose, hasHands, coordinateSystem = 'z-up') {
   const blenderZAxis = isYUp ? 'y' : 'z';
   if (joints.body) joints.body.visible = hasHands || !joints.bodyNoHands;
   if (joints.bodyNoHands) joints.bodyNoHands.visible = !hasHands;
-  if (joints.leftLeg) joints.leftLeg.rotation[blenderZAxis] = deg((pose.ll - 90) * 0.45);
+  if (joints.leftLeg) joints.leftLeg.rotation[blenderZAxis] = deg((90 - pose.ll) * 0.45);
   if (joints.rightLeg) joints.rightLeg.rotation[blenderZAxis] = deg((90 - pose.rl) * 0.45);
-  if (joints.leftFoot) joints.leftFoot.rotation[isYUp ? 'z' : 'y'] = deg((pose.lf - 90) * 0.7);
-  if (joints.rightFoot) joints.rightFoot.rotation[isYUp ? 'z' : 'y'] = deg((pose.rf - 90) * 0.7);
+  if (joints.leftFoot) joints.leftFoot.rotation[isYUp ? 'z' : 'y'] = deg((90 - pose.lf) * 0.7);
+  if (joints.rightFoot) joints.rightFoot.rotation[isYUp ? 'z' : 'y'] = deg((90 - pose.rf) * 0.7);
   if (joints.leftArm) {
     joints.leftArm.visible = hasHands;
     joints.leftArm.rotation[isYUp ? 'z' : 'y'] = deg((pose.lh - HOME.lh) * 0.9);
@@ -590,7 +590,7 @@ export default function OttoSimulator({
   blink = true,
   colors = DEFAULT_COLORS,
   faceTextureUrl = DEFAULT_FACE_TEXTURE_URL,
-  gravityEnabled = true,
+  gravityEnabled = false,
   motion = null,
 }) {
   const wrapRef = useRef(null);

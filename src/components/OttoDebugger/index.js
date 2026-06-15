@@ -142,7 +142,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const [simColors, setSimColors] = useState(DEFAULT_SIM_COLORS);
   const [expression, setExpression] = useState('staticstate');
   const [appearanceOpen, setAppearanceOpen] = useState(true);
-  const [gravityEnabled, setGravityEnabled] = useState(true);
+  const [gravityEnabled, setGravityEnabled] = useState(false);
 
   const [pose, setPose] = useState({ ...HOME_POSE });
   const [transitionMs, setTransitionMs] = useState(150);
@@ -387,12 +387,6 @@ export default function OttoDebugger({ lang = 'zh' }) {
     setPose({ ll: r(), rl: r(), lf: r(), rf: r(), lh: hasHands ? r() : 45, rh: hasHands ? r() : 135 });
   };
 
-  const runAction = useCallback((action) => {
-    if (!connected) { addLog('err', t.logNeedConnect); return; }
-    setActiveAction(action);
-    callTool('self.otto.action', normalizeActionArgs(action, params), action);
-  }, [connected, params, callTool, addLog, t]);
-
   const stopAll = () => {
     playAbortRef.current = true;
     setPlaying(false);
@@ -532,17 +526,30 @@ export default function OttoDebugger({ lang = 'zh' }) {
     playFramesLocal(previewFrames, false);
   }, [params, hasHands, playFramesLocal]);
 
+  const syncAndSendAction = useCallback((action, actionParams, purpose = action) => {
+    const args = normalizeActionArgs(action, actionParams);
+    setActiveAction(action);
+    playFramesLocal(buildActionPreviewFrames(action, args, hasHands), false);
+    callTool('self.otto.action', args, purpose);
+  }, [callTool, hasHands, playFramesLocal]);
+
+  const runAction = useCallback((action) => {
+    if (!connected) { addLog('err', t.logNeedConnect); return; }
+    syncAndSendAction(action, params, action);
+  }, [connected, params, syncAndSendAction, addLog, t]);
+
   const sendChoreography = useCallback(async () => {
     if (!connected) { addLog('err', t.logNeedConnect); return; }
     if (!frames.length) return;
     const chunks = buildSequenceChunks(frames);
     addLog('sys', t.logSendSeq(frames.length, chunks.length));
+    playFramesLocal(frames, false);
     for (const chunk of chunks) {
       callTool('self.otto.servo_sequences', { sequence: chunk }, 'seq');
       await sleep(120);
     }
     setTimeout(() => callTool('self.otto.action', { action: 'home' }, 'home'), 200);
-  }, [connected, frames, callTool, addLog, t]);
+  }, [connected, frames, callTool, addLog, t, playFramesLocal]);
 
   const loadDance = (preset) => {
     setFrames(preset.build());
@@ -604,12 +611,12 @@ export default function OttoDebugger({ lang = 'zh' }) {
     const onKey = (e) => {
       if (!connected) return;
       const map = {
-        w: () => callTool('self.otto.action', { action: 'walk', steps: 2, speed: params.speed, direction: 1, arm_swing: params.arm_swing }, 'walk'),
-        s: () => callTool('self.otto.action', { action: 'walk', steps: 2, speed: params.speed, direction: -1, arm_swing: params.arm_swing }, 'walk'),
-        a: () => callTool('self.otto.action', { action: 'turn', steps: 2, speed: params.speed, direction: 1, arm_swing: params.arm_swing }, 'turn'),
-        d: () => callTool('self.otto.action', { action: 'turn', steps: 2, speed: params.speed, direction: -1, arm_swing: params.arm_swing }, 'turn'),
-        j: () => callTool('self.otto.action', { action: 'jump', steps: 1, speed: params.speed }, 'jump'),
-        h: () => callTool('self.otto.action', { action: 'home' }, 'home'),
+        w: () => syncAndSendAction('walk', { steps: 2, speed: params.speed, direction: 1, arm_swing: params.arm_swing }, 'walk'),
+        s: () => syncAndSendAction('walk', { steps: 2, speed: params.speed, direction: -1, arm_swing: params.arm_swing }, 'walk'),
+        a: () => syncAndSendAction('turn', { steps: 2, speed: params.speed, direction: 1, arm_swing: params.arm_swing }, 'turn'),
+        d: () => syncAndSendAction('turn', { steps: 2, speed: params.speed, direction: -1, arm_swing: params.arm_swing }, 'turn'),
+        j: () => syncAndSendAction('jump', { steps: 1, speed: params.speed }, 'jump'),
+        h: () => syncAndSendAction('home', {}, 'home'),
         ' ': () => callTool('self.otto.stop', {}, 'stop'),
       };
       const fn = map[e.key.toLowerCase()];
@@ -617,7 +624,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [driveMode, connected, params, callTool]);
+  }, [driveMode, connected, params, callTool, syncAndSendAction]);
 
   const statusMeta = {
     disconnected: { label: t.statusDisconnected, cls: styles.dotGray },

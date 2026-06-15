@@ -145,7 +145,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 13px; font-weight: 700; color: var(--ifm-color-emphasis-700);
   margin-bottom: 8px;
 }
-.paramGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.paramGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 14px; }
 .paramField { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; }
 .paramEmpty {
   display: flex; align-items: center;
@@ -155,6 +155,31 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .paramField input, .paramField select, .calibRow select, .editor input, .oscRow input, .editServo input, .editRow input {
   padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line);
   background: var(--ifm-background-color); color: var(--ifm-font-color-base); font-size: 13px;
+}
+.paramControl {
+  min-width: 0; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--ifm-color-emphasis-100);
+}
+.paramControlHead {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 7px; font-size: 12px; font-weight: 700;
+}
+.paramControlHead input {
+  width: 70px; padding: 4px 7px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--ifm-background-color); color: var(--ifm-font-color-base); font-size: 13px;
+  font-variant-numeric: tabular-nums; text-align: right;
+}
+.paramStepper { display: grid; grid-template-columns: 28px minmax(0, 1fr) 28px; gap: 8px; align-items: center; }
+.paramStepper button {
+  width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 7px;
+  background: var(--ifm-background-surface-color); color: var(--ifm-font-color-base);
+  font-size: 16px; font-weight: 700; line-height: 1; cursor: pointer;
+}
+.paramStepper button:hover { border-color: var(--ifm-color-primary); color: var(--ifm-color-primary); }
+.paramStepper input { width: 100%; accent-color: var(--ifm-color-primary); }
+.paramScale {
+  display: flex; justify-content: space-between; margin-top: 2px;
+  font-size: 10px; color: var(--ifm-color-emphasis-600);
 }
 .actionGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
 .actionCard {

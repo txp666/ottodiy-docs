@@ -32,6 +32,12 @@ const COMMUNITY_SUBMIT_REPO = 'txp666/ottodiy-docs';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const BOTH_DIRECTION_ACTIONS = new Set(['hands_up', 'hands_down', 'hand_wave']);
+const PARAM_CONFIGS = [
+  { k: 'steps', min: 1, max: 100, step: 1 },
+  { k: 'speed', min: 100, max: 3000, step: 50 },
+  { k: 'amount', min: 0, max: 170, step: 5 },
+  { k: 'arm_swing', min: 0, max: 170, step: 5 },
+];
 
 function readStore(key) {
   if (typeof window === 'undefined') return null;
@@ -900,17 +906,20 @@ export default function OttoDebugger({ lang = 'zh' }) {
               </div>
               <div className={styles.paramGrid}>
                 {[
-                  { k: 'steps', label: t.pSteps, min: 1, max: 100 },
-                  { k: 'speed', label: t.pSpeed, min: 100, max: 3000 },
-                  { k: 'amount', label: t.pAmount, min: 0, max: 170 },
-                  { k: 'arm_swing', label: t.pArmSwing, min: 0, max: 170 },
+                  { ...PARAM_CONFIGS[0], label: t.pSteps },
+                  { ...PARAM_CONFIGS[1], label: t.pSpeed },
+                  { ...PARAM_CONFIGS[2], label: t.pAmount },
+                  { ...PARAM_CONFIGS[3], label: t.pArmSwing },
                 ].filter((c) => activeNeeds.has(c.k)).map((c) => (
-                  <label key={c.k} className={styles.paramField}>
-                    <span>{c.label}</span>
-                    <input type="number" min={c.min} max={c.max} value={params[c.k]}
-                      aria-label={c.label}
-                      onChange={(e) => setParams((p) => ({ ...p, [c.k]: clamp(Number(e.target.value), c.min, c.max) }))} />
-                  </label>
+                  <ParamControl
+                    key={c.k}
+                    label={c.label}
+                    min={c.min}
+                    max={c.max}
+                    step={c.step}
+                    value={params[c.k]}
+                    onChange={(value) => setParams((p) => ({ ...p, [c.k]: value }))}
+                  />
                 ))}
                 {activeNeeds.has('direction') && <label className={styles.paramField}>
                   <span>{t.pDirection}</span>
@@ -1189,6 +1198,47 @@ function FrameEditor({ frame, hasHands, onChange, pose, t, lang }) {
       <div className={styles.editRow}>
         <label>{t.moveDuration} (ms)<input type="number" min="100" max="3000" value={frame.v} onChange={(e) => onChange({ v: clamp(Number(e.target.value), 100, 3000) })} /></label>
         <label>{t.endDelay} (ms)<input type="number" min="0" max="5000" value={frame.d} onChange={(e) => onChange({ d: Math.max(0, Number(e.target.value)) })} /></label>
+      </div>
+    </div>
+  );
+}
+
+function ParamControl({ label, min, max, step, value, onChange }) {
+  const resolvedValue = clamp(Math.round(Number(value) || min), min, max);
+  const setClamped = (next) => {
+    if (next === '') return;
+    onChange(clamp(Math.round(Number(next) || min), min, max));
+  };
+  return (
+    <div className={styles.paramControl}>
+      <div className={styles.paramControlHead}>
+        <span>{label}</span>
+        <input
+          type="number"
+          min={min}
+          max={max}
+          step={step}
+          value={resolvedValue}
+          aria-label={label}
+          onChange={(e) => setClamped(e.target.value)}
+        />
+      </div>
+      <div className={styles.paramStepper}>
+        <button type="button" onClick={() => setClamped(resolvedValue - step)} aria-label={`${label} -`}>-</button>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={resolvedValue}
+          aria-label={label}
+          onChange={(e) => setClamped(e.target.value)}
+        />
+        <button type="button" onClick={() => setClamped(resolvedValue + step)} aria-label={`${label} +`}>+</button>
+      </div>
+      <div className={styles.paramScale}>
+        <span>{min}</span>
+        <span>{max}</span>
       </div>
     </div>
   );

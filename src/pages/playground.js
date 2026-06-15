@@ -12,7 +12,7 @@ export default function Playground() {
   return (
     <Layout title={t.pageTitle} description={t.pageIntro}>
       <main style={{ padding: '28px 0 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 12px 10px' }}>
+        <div style={{ maxWidth: 1560, margin: '0 auto', padding: '0 20px 10px' }}>
           <h1 style={{ marginBottom: 6, fontSize: '1.9rem' }}>{t.pageTitle}</h1>
           <p style={{ color: 'var(--ifm-color-emphasis-700)', marginBottom: 18 }}>
             {t.pageIntro}

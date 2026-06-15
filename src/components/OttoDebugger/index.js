@@ -825,6 +825,31 @@ export default function OttoDebugger({ lang = 'zh' }) {
             </div>
           </div>
 
+          <div className={styles.servoCard}>
+            <div className={styles.cardTitle}>{t.servos}</div>
+            {SERVOS.filter((s) => hasHands || !s.hand).map((s) => (
+              <div key={s.key} className={styles.servoRow}>
+                <div className={styles.servoHead}>
+                  <span className={styles.servoLabel}>{pick(lang, s.label, s.labelEn)} <code>{s.key}</code></span>
+                  <span className={styles.servoVal}>{pose[s.key]}°</span>
+                </div>
+                <input
+                  type="range" min="0" max="180" value={pose[s.key]}
+                  disabled={playing}
+                  onChange={(e) => updateServo(s.key, Number(e.target.value))}
+                  className={styles.slider}
+                />
+                <div className={styles.servoDesc}>{pick(lang, s.desc, s.descEn)}</div>
+              </div>
+            ))}
+            <div className={styles.driveBox}>
+              <label className={styles.check}>
+                <input type="checkbox" checked={driveMode} onChange={(e) => setDriveMode(e.target.checked)} /> {t.keyboardDrive}
+              </label>
+              {driveMode && <span className={styles.driveHint}>{t.driveHint}</span>}
+            </div>
+          </div>
+
           <details
             className={styles.appearanceCard}
             open={appearanceOpen}
@@ -857,31 +882,6 @@ export default function OttoDebugger({ lang = 'zh' }) {
             </div>
             <div className={styles.saveHint}>{t.appearanceSavedHint}</div>
           </details>
-
-          <div className={styles.servoCard}>
-            <div className={styles.cardTitle}>{t.servos}</div>
-            {SERVOS.filter((s) => hasHands || !s.hand).map((s) => (
-              <div key={s.key} className={styles.servoRow}>
-                <div className={styles.servoHead}>
-                  <span className={styles.servoLabel}>{pick(lang, s.label, s.labelEn)} <code>{s.key}</code></span>
-                  <span className={styles.servoVal}>{pose[s.key]}°</span>
-                </div>
-                <input
-                  type="range" min="0" max="180" value={pose[s.key]}
-                  disabled={playing}
-                  onChange={(e) => updateServo(s.key, Number(e.target.value))}
-                  className={styles.slider}
-                />
-                <div className={styles.servoDesc}>{pick(lang, s.desc, s.descEn)}</div>
-              </div>
-            ))}
-            <div className={styles.driveBox}>
-              <label className={styles.check}>
-                <input type="checkbox" checked={driveMode} onChange={(e) => setDriveMode(e.target.checked)} /> {t.keyboardDrive}
-              </label>
-              {driveMode && <span className={styles.driveHint}>{t.driveHint}</span>}
-            </div>
-          </div>
         </div>
 
         <div className={styles.right}>

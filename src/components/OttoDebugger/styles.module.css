@@ -1,7 +1,7 @@
 .app {
-  max-width: 1200px;
+  max-width: 1560px;
   margin: 0 auto;
-  padding: 0 12px 40px;
+  padding: 0 20px 40px;
   --line: var(--ifm-color-emphasis-200);
   --panel: var(--ifm-background-surface-color);
 }
@@ -60,10 +60,11 @@
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ===== 主网格 ===== */
-.grid { display: grid; grid-template-columns: 380px 1fr; gap: 16px; align-items: start; }
+.grid { display: grid; grid-template-columns: minmax(380px, 430px) minmax(0, 1fr); gap: 16px; align-items: start; }
 @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 920px) { .app { padding: 0 12px 40px; } }
 
-.left { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 70px; }
+.left { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 64px; }
 @media (max-width: 920px) { .left { position: static; } }
 
 /* ===== 仿真 ===== */
@@ -71,10 +72,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .simCard { padding: 8px; }
 .simStage {
   background: radial-gradient(circle at 50% 35%, #eaf1ff 0%, #dbe6fb 70%, #c9d8f5 100%);
-  border-radius: 10px; height: 280px; display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; height: clamp(220px, 26vh, 260px); display: flex; align-items: center; justify-content: center;
 }
 [data-theme='dark'] .simStage { background: radial-gradient(circle at 50% 35%, #1e2a44 0%, #16203a 70%, #0f1830 100%); }
-.simBar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 6px 4px; }
+.simBar { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; padding: 8px 6px 3px; }
 .simBtns { margin-left: auto; display: flex; gap: 6px; }
 .simBtns .btnGhost { padding: 5px 10px; font-size: 12px; }
 .check { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; cursor: pointer; }
@@ -103,16 +104,28 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .saveHint { margin-top: 10px; font-size: 11px; color: var(--ifm-color-emphasis-600); }
 
 /* ===== 舵机 ===== */
-.servoCard { padding: 14px 16px; }
-.cardTitle { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; }
-.servoRow { margin-bottom: 12px; }
+.servoCard { padding: 12px 14px; }
+.cardTitle { font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; }
+.servoCard > .cardTitle { margin-bottom: 8px; }
+.servoCard > .servoRow {
+  display: grid; grid-template-columns: minmax(58px, 72px) minmax(0, 1fr) 38px;
+  align-items: center; gap: 6px 8px; margin-bottom: 7px;
+}
 .servoHead { display: flex; justify-content: space-between; align-items: baseline; }
 .servoLabel { font-size: 13px; font-weight: 600; }
 .servoLabel code, .oscName code { font-size: 11px; color: var(--ifm-color-emphasis-600); }
 .servoVal { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ifm-color-primary); font-size: 13px; }
-.servoDesc { font-size: 11px; color: var(--ifm-color-emphasis-600); margin-top: 2px; }
+.servoCard .servoHead { display: contents; }
+.servoCard .servoLabel { grid-column: 1; grid-row: 1; }
+.servoCard .slider { grid-column: 2; grid-row: 1; }
+.servoCard .servoVal { grid-column: 3; grid-row: 1; text-align: right; }
+.servoDesc {
+  grid-column: 2 / 4; min-width: 0; margin-top: -4px;
+  font-size: 10px; color: var(--ifm-color-emphasis-600);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .slider { width: 100%; accent-color: var(--ifm-color-primary); cursor: pointer; }
-.driveBox { margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.driveBox { margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--line); }
 .driveHint { font-size: 11px; color: var(--ifm-color-emphasis-600); margin-left: 8px; }
 
 /* ===== 选项卡 ===== */

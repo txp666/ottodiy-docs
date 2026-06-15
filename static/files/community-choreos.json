@@ -1,4 +1,37 @@
 {
   "version": 1,
-  "items": []
+  "items": [
+    {
+      "id": "1781498833713",
+      "title": "求婚",
+      "author": "乔丹",
+      "description": "求婚的动作",
+      "createdAt": "2026-06-15T04:47:13.713Z",
+      "sourceIssue": "https://github.com/txp666/ottodiy-docs/issues/10",
+      "frames": [
+        {
+          "id": "xl25rfq",
+          "type": "move",
+          "pose": {
+            "ll": 0,
+            "rl": 0,
+            "lf": 0,
+            "rf": 90,
+            "lh": 35,
+            "rh": 0
+          },
+          "enabled": {
+            "ll": true,
+            "rl": true,
+            "lf": true,
+            "rf": true,
+            "lh": true,
+            "rh": true
+          },
+          "v": 600,
+          "d": 200
+        }
+      ]
+    }
+  ]
 }

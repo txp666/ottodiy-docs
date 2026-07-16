@@ -149,12 +149,27 @@ const COLOR_FIELDS = [
 ];
 
 const EXPRESSIONS = [
-  { value: 'staticstate', label: '默认', labelEn: 'Default', url: '/files/gifs/staticstate.gif' },
+  { value: 'neutral', label: '平静', labelEn: 'Neutral', url: '/files/gifs/neutral.gif' },
+  { value: 'angry', label: '生气', labelEn: 'Angry', url: '/files/gifs/angry.gif' },
+  { value: 'confident', label: '自信', labelEn: 'Confident', url: '/files/gifs/confident.gif' },
+  { value: 'confused', label: '困惑', labelEn: 'Confused', url: '/files/gifs/confused.gif' },
+  { value: 'cool', label: '酷', labelEn: 'Cool', url: '/files/gifs/cool.gif' },
+  { value: 'crying', label: '哭泣', labelEn: 'Crying', url: '/files/gifs/crying.gif' },
+  { value: 'delicious', label: '馋嘴', labelEn: 'Delicious', url: '/files/gifs/delicious.gif' },
+  { value: 'embarrassed', label: '尴尬', labelEn: 'Embarrassed', url: '/files/gifs/embarrassed.gif' },
+  { value: 'funny', label: '滑稽', labelEn: 'Funny', url: '/files/gifs/funny.gif' },
   { value: 'happy', label: '开心', labelEn: 'Happy', url: '/files/gifs/happy.gif' },
+  { value: 'kissy', label: '亲亲', labelEn: 'Kissy', url: '/files/gifs/kissy.gif' },
+  { value: 'laughing', label: '大笑', labelEn: 'Laughing', url: '/files/gifs/laughing.gif' },
+  { value: 'loving', label: '喜爱', labelEn: 'Loving', url: '/files/gifs/loving.gif' },
+  { value: 'relaxed', label: '放松', labelEn: 'Relaxed', url: '/files/gifs/relaxed.gif' },
   { value: 'sad', label: '悲伤', labelEn: 'Sad', url: '/files/gifs/sad.gif' },
-  { value: 'anger', label: '生气', labelEn: 'Angry', url: '/files/gifs/anger.gif' },
-  { value: 'scare', label: '害怕', labelEn: 'Scared', url: '/files/gifs/scare.gif' },
-  { value: 'buxue', label: '不屑', labelEn: 'Dismissive', url: '/files/gifs/buxue.gif' },
+  { value: 'shocked', label: '震惊', labelEn: 'Shocked', url: '/files/gifs/shocked.gif' },
+  { value: 'silly', label: '搞怪', labelEn: 'Silly', url: '/files/gifs/silly.gif' },
+  { value: 'sleepy', label: '困倦', labelEn: 'Sleepy', url: '/files/gifs/sleepy.gif' },
+  { value: 'surprised', label: '惊讶', labelEn: 'Surprised', url: '/files/gifs/surprised.gif' },
+  { value: 'thinking', label: '思考', labelEn: 'Thinking', url: '/files/gifs/thinking.gif' },
+  { value: 'winking', label: '眨眼', labelEn: 'Winking', url: '/files/gifs/winking.gif' },
 ];
 
 const BoltIcon = () => (
@@ -178,7 +193,7 @@ export default function OttoDebugger({ lang = 'zh' }) {
   const [isSecure, setIsSecure] = useState(false);
   const [hasHands, setHasHands] = useState(true);
   const [simColors, setSimColors] = useState(DEFAULT_SIM_COLORS);
-  const [expression, setExpression] = useState('staticstate');
+  const [expression, setExpression] = useState('neutral');
   const [appearanceOpen, setAppearanceOpen] = useState(true);
   const [gravityEnabled, setGravityEnabled] = useState(false);
 

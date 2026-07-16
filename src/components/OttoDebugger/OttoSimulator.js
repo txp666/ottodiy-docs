@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 const MODEL_URL = '/files/models/otto.glb';
-const DEFAULT_FACE_TEXTURE_URL = '/files/gifs/staticstate.gif';
+const DEFAULT_FACE_TEXTURE_URL = '/files/gifs/neutral.gif';
 const DEFAULT_COLORS = {
   head: '#f0f2f5',
   body: '#f0f2f5',

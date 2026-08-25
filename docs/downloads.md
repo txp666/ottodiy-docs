@@ -58,7 +58,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 v2.0.4-2 版本支持通过微信小程序进行机器人控制、校准和自定义设置。扫描下方二维码即可使用：
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/wechat-mini-program.jpg" alt="微信小程序二维码" width="300" />
+  <ImgWithBaseUrl src="/img/wechat-mini-program.webp" alt="微信小程序二维码" width="300" />
   <div align="center"><em>微信小程序二维码</em></div>
 </p>
 
@@ -100,11 +100,11 @@ esptool.py --chip esp32s3 merge_bin -o merged-flash.bin --flash_mode dio --flash
 6. 点击"开始"进行烧录
 7. <span style={{color: 'red'}}><strong>烧录完成后，重启主板！！！！！！！</strong></span>
 <p align="center">
-  <ImgWithBaseUrl src="/img/download1.png" alt="download1" />
+  <ImgWithBaseUrl src="/img/download1.webp" alt="download1" />
   <div align="center"><em>图1：选择ESP32S3,串口</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/download2.png" alt="download2" />
+  <ImgWithBaseUrl src="/img/download2.webp" alt="download2" />
   <div align="center"><em>图2：选择程序，COM,开始下载</em></div>
 </p>
 

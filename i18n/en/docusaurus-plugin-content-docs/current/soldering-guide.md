@@ -13,11 +13,11 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 ## Soldering Auxiliary Tools
 
   <div style={{width: '100%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/9.png" alt="9" />
+    <ImgWithBaseUrl src="/img/Soldering/9.webp" alt="9" />
     <div><em>Figure 9</em></div>
   </div>
   <div style={{width: '100%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/10.png" alt="10" />
+    <ImgWithBaseUrl src="/img/Soldering/10.webp" alt="10" />
     <div><em>Figure 10</em></div>
   </div>
 
@@ -25,33 +25,33 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/1.jpg" alt="1" />
+    <ImgWithBaseUrl src="/img/Soldering/1.webp" alt="1" />
     <div><em>Figure 1</em></div>
   </div>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/2.jpg" alt="2" />
+    <ImgWithBaseUrl src="/img/Soldering/2.webp" alt="2" />
     <div><em>Figure 2</em></div>
   </div>
 </div>
 
 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/3.jpg" alt="3" />
+    <ImgWithBaseUrl src="/img/Soldering/3.webp" alt="3" />
     <div><em>Figure 3</em></div>
   </div>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/4.jpg" alt="4" />
+    <ImgWithBaseUrl src="/img/Soldering/4.webp" alt="4" />
     <div><em>Figure 4</em></div>
   </div>
 </div>
 
 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/5.jpg" alt="5" />
+    <ImgWithBaseUrl src="/img/Soldering/5.webp" alt="5" />
     <div><em>Figure 5</em></div>
   </div>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/6.jpg" alt="6" />
+    <ImgWithBaseUrl src="/img/Soldering/6.webp" alt="6" />
     <div><em>Figure 6</em></div>
   </div>
 </div>
@@ -60,18 +60,18 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px'}}>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/7.png" alt="7" />
+    <ImgWithBaseUrl src="/img/Soldering/7.webp" alt="7" />
     <div><em>Figure 7</em></div>
   </div>
   <div style={{width: '48%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/8.png" alt="8" />
+    <ImgWithBaseUrl src="/img/Soldering/8.webp" alt="8" />
     <div><em>Figure 8</em></div>
   </div>
 </div>
 
 - **Microphone**: Pin 3 GND ring must be soldered well, otherwise it will heat up unstably and easily burn out. Do not use hot air for a long time, apply solder to the pad first, then quickly place the microphone after melting. Refer to the manual for soldering temperature:
   <div style={{width: '100%', textAlign: 'center'}}>
-    <ImgWithBaseUrl src="/img/Soldering/11.png" alt="11" />
+    <ImgWithBaseUrl src="/img/Soldering/11.webp" alt="11" />
     <div><em>Figure 11</em></div>
   </div>
 - **Amplifier**: Pay attention to direction, + sign corresponds to the white dot in the upper right corner

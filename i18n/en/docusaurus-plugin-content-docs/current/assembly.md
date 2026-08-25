@@ -43,7 +43,7 @@ Before starting assembly, make sure you have:
 3. Ensure all holes are clear
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step1.jpg" alt="step1" />
+  <ImgWithBaseUrl src="/img/assembly/step1.webp" alt="step1" />
   <div align="center"><em>Figure 1: All materials prepared</em></div>
 </p>
 
@@ -57,7 +57,7 @@ Before starting assembly, make sure you have:
 6. Remove servo wires, wait for body installation to complete before reconnecting
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step2.jpg" alt="step2" />
+  <ImgWithBaseUrl src="/img/assembly/step2.webp" alt="step2" />
   <div align="center"><em>Figure 2: Electronic component installation</em></div>
 </p>
 
@@ -66,29 +66,29 @@ Before starting assembly, make sure you have:
 **Use the two large screws included with the servo to secure it**
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step3_1.png" alt="step3_1" />
+  <ImgWithBaseUrl src="/img/assembly/step3_1.webp" alt="step3_1" />
   <div align="center"><em>Figure 3: Assemble leg servo</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step3_2.png" alt="step3_2" />
+  <ImgWithBaseUrl src="/img/assembly/step3_2.webp" alt="step3_2" />
   <div align="center"><em>Figure 4: Complete leg servo assembly</em></div>
 </p>
 
 **Trim servo cross arm: cut the two longer ends by approximately half**
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step3_3.png" alt="step3_3" />
+  <ImgWithBaseUrl src="/img/assembly/step3_3.webp" alt="step3_3" />
   <div align="center"><em>Figure 5: Trim servo cross arm</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step3_4.png" alt="step3_4" />
+  <ImgWithBaseUrl src="/img/assembly/step3_4.webp" alt="step3_4" />
   <div align="center"><em>Figure 6: Install cross arm to leg</em></div>
 </p>
 
 **Keep leg cylindrical protrusion facing the screen side, leg direction vertically forward (try to avoid pigeon-toed or duck-footed, some may have a slight angle which doesn't affect performance)**
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step3_5.png" alt="step3_5" />
+  <ImgWithBaseUrl src="/img/assembly/step3_5.webp" alt="step3_5" />
   <div align="center"><em>Figure 7: Secure leg and tighten fixing screws</em></div>
 </p>
 
@@ -97,49 +97,49 @@ Before starting assembly, make sure you have:
 **Use the shaped arm shown below, install vertically upward, and tighten screws**
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step4_1.png" alt="step4_1" />
+  <ImgWithBaseUrl src="/img/assembly/step4_1.webp" alt="step4_1" />
   <div align="center"><em>Figure 8: Secure foot servo arm</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step4_2.png" alt="step4_2" />
+  <ImgWithBaseUrl src="/img/assembly/step4_2.webp" alt="step4_2" />
   <div align="center"><em>Figure 9: Secure foot</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step4_3.png" alt="step4_3" />
+  <ImgWithBaseUrl src="/img/assembly/step4_3.webp" alt="step4_3" />
   <div align="center"><em>Figure 10: Route foot servo wire through body</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step4_4.png" alt="step4_4" />
+  <ImgWithBaseUrl src="/img/assembly/step4_4.webp" alt="step4_4" />
   <div align="center"><em>Figure 11: Foot installation</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step4_5.png" alt="step4_5" />
+  <ImgWithBaseUrl src="/img/assembly/step4_5.webp" alt="step4_5" />
   <div align="center"><em>Figure 12: Install foot servo fixing screws</em></div>
 </p>
 
 ### 5. Circuit Board Installation
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step5_1.png" alt="step5_1" />
+  <ImgWithBaseUrl src="/img/assembly/step5_1.webp" alt="step5_1" />
   <div align="center"><em>Figure 13: Secure speaker, there's a slot with wire</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step5_2.png" alt="step5_2" />
+  <ImgWithBaseUrl src="/img/assembly/step5_2.webp" alt="step5_2" />
   <div align="center"><em>Figure 14: Install servo wires, speaker, battery, antenna</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step5_3.png" alt="step5_3" />
+  <ImgWithBaseUrl src="/img/assembly/step5_3.webp" alt="step5_3" />
   <div align="center"><em>Figure 15: Install main board</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step5_4.png" alt="step5_4" />
+  <ImgWithBaseUrl src="/img/assembly/step5_4.webp" alt="step5_4" />
   <div align="center"><em>Figure 16: Ensure screen, Type-C charging port and switch are properly installed</em></div>
 </p>
 
 ### 6. Head Cover Installation
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/assembly/step6_1.png" alt="step6_1" />
+  <ImgWithBaseUrl src="/img/assembly/step6_1.webp" alt="step6_1" />
   <div align="center"><em>Figure 17: Head cover front side has a protrusion to press down circuit board</em></div>
 </p>
 

@@ -1,0 +1,20 @@
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/esp-web-tools/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/files/*.bin
+  Cache-Control: public, max-age=31536000, immutable
+
+/files/*-web-flash-manifest.json
+  Cache-Control: public, max-age=86400
+
+/files/models/*
+  Cache-Control: public, max-age=604800
+
+/files/gifs/*
+  Cache-Control: public, max-age=2592000
+
+/img/*
+  Cache-Control: public, max-age=604800

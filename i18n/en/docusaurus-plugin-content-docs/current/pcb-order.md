@@ -15,57 +15,57 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 3. Click "One-Click Order PCB" in LCSC Mall
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/PCB/PCB1.png" alt="PCB1" />
+  <ImgWithBaseUrl src="/img/PCB/PCB1.webp" alt="PCB1" />
   <div align="center"><em>Figure 1</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/PCB/PCB2.png" alt="PCB2" />
+  <ImgWithBaseUrl src="/img/PCB/PCB2.webp" alt="PCB2" />
   <div align="center"><em>Figure 2</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/PCB/PCB3.png" alt="PCB3" />
+  <ImgWithBaseUrl src="/img/PCB/PCB3.webp" alt="PCB3" />
   <div align="center"><em>Figure 3</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/PCB/PCB4.png" alt="PCB4" />
+  <ImgWithBaseUrl src="/img/PCB/PCB4.webp" alt="PCB4" />
   <div align="center"><em>Figure 4</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/PCB/PCB5.png" alt="PCB5" />
+  <ImgWithBaseUrl src="/img/PCB/PCB5.webp" alt="PCB5" />
   <div align="center"><em>Figure 5</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/PCB/PCB6.png" alt="PCB6" />
+  <ImgWithBaseUrl src="/img/PCB/PCB6.webp" alt="PCB6" />
   <div align="center"><em>Figure 6</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/PCB/PCB7.png" alt="PCB7" />
+  <ImgWithBaseUrl src="/img/PCB/PCB7.webp" alt="PCB7" />
   <div align="center"><em>Figure 7</em></div>
 </p>
 
 ## BOM Ordering
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/BOM/BOM1.png" alt="BOM1" />
+  <ImgWithBaseUrl src="/img/BOM/BOM1.webp" alt="BOM1" />
   <div align="center"><em>Figure 1</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/BOM/BOM2.png" alt="BOM2" />
+  <ImgWithBaseUrl src="/img/BOM/BOM2.webp" alt="BOM2" />
   <div align="center"><em>Figure 2</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/BOM/BOM3.png" alt="BOM3" />
+  <ImgWithBaseUrl src="/img/BOM/BOM3.webp" alt="BOM3" />
   <div align="center"><em>Figure 3</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/BOM/BOM4.png" alt="BOM4" />
+  <ImgWithBaseUrl src="/img/BOM/BOM4.webp" alt="BOM4" />
   <div align="center"><em>Figure 4</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/BOM/BOM5.png" alt="BOM5" />
+  <ImgWithBaseUrl src="/img/BOM/BOM5.webp" alt="BOM5" />
   <div align="center"><em>Figure 5</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/BOM/BOM6.png" alt="BOM6" />
+  <ImgWithBaseUrl src="/img/BOM/BOM6.webp" alt="BOM6" />
   <div align="center"><em>Figure 6</em></div>
 </p>

@@ -107,7 +107,7 @@ export default function Home() {
             </div>
             <div className="col col--6">
               <img 
-                src={require('@site/static/img/ottoRobot2.png').default}
+                src={require('@site/static/img/ottoRobot2.webp').default}
                 alt={translate({
                   id: 'homepage.robotAlt',
                   message: 'Otto机器人',

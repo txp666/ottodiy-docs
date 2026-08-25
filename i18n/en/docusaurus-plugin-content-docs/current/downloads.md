@@ -58,7 +58,7 @@ Here you can find all program files and source code links related to the Otto DI
 Version v2.0.4-2 supports robot control, calibration, and customization through WeChat Mini Program. Scan the QR code below to use:
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/wechat-mini-program.jpg" alt="WeChat Mini Program QR Code" width="300" />
+  <ImgWithBaseUrl src="/img/wechat-mini-program.webp" alt="WeChat Mini Program QR Code" width="300" />
   <div align="center"><em>WeChat Mini Program QR Code</em></div>
 </p>
 
@@ -93,11 +93,11 @@ esptool.py --chip esp32s3 merge_bin -o merged-flash.bin --flash_mode dio --flash
 7. <span style={{color: 'red'}}><strong>After flashing is complete, restart the board!!!!!!!!</strong></span>
 
 <p align="center">
-  <ImgWithBaseUrl src="/img/download1.png" alt="download1" />
+  <ImgWithBaseUrl src="/img/download1.webp" alt="download1" />
   <div align="center"><em>Figure 1: Select ESP32S3, serial port</em></div>
 </p>
 <p align="center">
-  <ImgWithBaseUrl src="/img/download2.png" alt="download2" />
+  <ImgWithBaseUrl src="/img/download2.webp" alt="download2" />
   <div align="center"><em>Figure 2: Select program, COM, start download</em></div>
 </p>
 

@@ -6,7 +6,7 @@ sidebar_position: 1
 
 The Tenengla AI Desktop Humanoid Robot is an open-source DIY robot with a cute appearance and rich features, making it perfect for educational purposes and personal maker projects. This website focuses on sharing the design philosophy and technical principles of the Tenengla AI Desktop Humanoid Robot, helping more people quickly get started with desktop AI robots, bringing robots and artificial intelligence into the physical world and into homes as fun, interesting, and practical super intelligent assistants.
 
-![Tenengla AI Desktop DIY Humanoid Robot](/img/ottoRobot2.png)
+![Tenengla AI Desktop DIY Humanoid Robot](/img/ottoRobot2.webp)
 
 ## What is the Tenengla AI Desktop Humanoid Robot?
 

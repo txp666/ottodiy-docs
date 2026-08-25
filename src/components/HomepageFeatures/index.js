@@ -6,7 +6,7 @@ import styles from './styles.module.css';
 const FeatureList = [
   {
     title: <Translate id="features.easyToLearn.title">简单易学</Translate>,
-    imgSrc: require('@site/static/img/ottoRobot3.png').default,
+    imgSrc: require('@site/static/img/ottoRobot3.webp').default,
     description: (
       <Translate id="features.easyToLearn.description">
         AI桌面机器人设计简洁，使用常见的组件，非常适合初学者入门。
@@ -16,7 +16,7 @@ const FeatureList = [
   },
   {
     title: <Translate id="features.openSource.title">开源灵活</Translate>,
-    imgSrc: require('@site/static/img/ottoRobot2.png').default,
+    imgSrc: require('@site/static/img/ottoRobot2.webp').default,
     description: (
       <Translate id="features.openSource.description">
         作为完全开源项目，该机器人支持自由修改和扩展。你可以添加传感器、
@@ -26,7 +26,7 @@ const FeatureList = [
   },
   {
     title: <Translate id="features.stemEducation.title">STEM教育工具</Translate>,
-    imgSrc: require('@site/static/img/ottoRobot4.png').default,
+    imgSrc: require('@site/static/img/ottoRobot4.webp').default,
     description: (
       <Translate id="features.stemEducation.description">
         该机器人融合了机械、电子、编程和3D打印等多学科知识，

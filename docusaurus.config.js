@@ -100,7 +100,7 @@ const config = {
         logo: {
           alt: 'OttoDIY Logo',
           src: 'img/favicon.ico',
-          href: 'https://shanmaotech.cn',
+          href: '/',
         },
         items: [
           {
@@ -160,8 +160,8 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://mall.bilibili.com/neul-next/detailuniversal/detail.html?isMerchant=1&page=detailuniversal_detail&saleType=0&itemsId=12340590&loadingShow=1&noTitleBar=1&msource=merchant_share',
-            label: '购买套件',
+            href: 'https://m.tb.cn/h.SRXKaIT7OtBRrpQ',
+            label: '闪猫官方旗舰店',
             position: 'right',
           },
           {

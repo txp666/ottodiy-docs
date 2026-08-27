@@ -51,8 +51,8 @@
     "message": "GitHub",
     "description": "Navbar item with label GitHub"
   },
-  "item.label.购买套件": {
-    "message": "Buy Kit",
-    "description": "Navbar item with label 购买套件"
+  "item.label.闪猫官方旗舰店": {
+    "message": "Tenengla Official Store",
+    "description": "Navbar item with label 闪猫官方旗舰店"
   }
 }

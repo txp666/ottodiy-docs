@@ -7,38 +7,6 @@
     "message": "OttoDIY Logo",
     "description": "The alt text of navbar logo"
   },
-  "item.label.开始制作": {
-    "message": "Get Started",
-    "description": "Navbar item with label 开始制作"
-  },
-  "item.label.PCB下单": {
-    "message": "Order PCB",
-    "description": "Navbar item with label PCB下单"
-  },
-  "item.label.Bom清单": {
-    "message": "BOM List",
-    "description": "Navbar item with label Bom清单"
-  },
-  "item.label.焊接指南": {
-    "message": "Soldering Guide",
-    "description": "Navbar item with label 焊接指南"
-  },
-  "item.label.程序下载": {
-    "message": "Downloads",
-    "description": "Navbar item with label 程序下载"
-  },
-  "item.label.编译教程": {
-    "message": "Build Guide",
-    "description": "Navbar item with label 编译教程"
-  },
-  "item.label.组装教程": {
-    "message": "Assembly Guide",
-    "description": "Navbar item with label 组装教程"
-  },
-  "item.label.使用说明": {
-    "message": "User Manual",
-    "description": "Navbar item with label 使用说明"
-  },
   "item.label.在线调试": {
     "message": "Console",
     "description": "Navbar item with label 在线调试"

@@ -104,47 +104,6 @@ const config = {
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
-            label: '开始制作',
-          },
-          {
-            to: '/docs/pcb-order', 
-            position: 'left',
-            label: 'PCB下单',
-          },
-          {
-            to: '/docs/bom', 
-            position: 'left',
-            label: 'Bom清单',
-          },
-          {
-            to: '/docs/soldering-guide', 
-            position: 'left',
-            label: '焊接指南',
-          },
-          {
-            to: '/docs/downloads',
-            position: 'left',
-            label: '程序下载',
-          },
-          {
-            to: '/docs/build-guide',
-            position: 'left',
-            label: '编译教程',
-          },
-          {
-            to: '/docs/assembly', 
-            position: 'left',
-            label: '组装教程',
-          },
-          {
-            to: '/docs/usage',
-            position: 'left',
-            label: '使用说明',
-          },
-          {
             to: '/playground',
             position: 'left',
             label: '在线调试',

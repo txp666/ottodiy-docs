@@ -15,7 +15,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 在这里，您可以找到 Otto DIY 机器人相关的所有程序文件和源代码链接。
 
-<FirmwareFlasher firmwareVersion="v2.3.0" />
+<FirmwareFlasher firmwareVersion="v2.4.2" />
 
 ## 源代码仓库
 
@@ -38,16 +38,17 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 | 版本     | 发布日期   | 功能描述                                                                                                             | 下载链接                          |
 | -------- | ---------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| v2.4.2   | 2026-8-27  | 更新至小智 2.4.2                                                                                                     | [2.4.2](/files/otto2.4.2.bin)     |
 | v2.3.0   | 2026-7-16  | 表情新增至 21 个                                                                                                     | [2.3.0](/files/otto2.3.0.bin)     |
 | v2.2.6   | 2026-5-18  | 优化 Otto动作收尾与自适应归位平滑度；修复 WebSocket 直连未收到 MCP 响应；调整 Otto 相机后端初始化稳定性 | [2.2.6](/files/otto2.2.6.bin)     |
-| v2.0.5   | 2025-12-8  | 更新电量下限，动作时不更新电量                                                                                       | [2.0.5](/files/otto2.0.5.bin)     |
-| v2.0.4-2 | 2025-11-17 | 增加微信小程序控制/校准/自定义功能                                                                                   | [2.0.4-2](/files/otto2.0.4-2.bin) |
-| v2.0.4   | 2025-10-31 | 更新到小智 2.0.4 增加了一些固定动作和 AI 自定义编程动作，具体查看[使用说明](/docs/usage#五动作)中的 MCP 工具介绍     | [2.0.4](/files/otto2.0.4.bin)     |
-| v1.4.4   | 2025-6-13  | 新增初始位置校准，“对话：校准左脚到 10 度/-10 度"                                                                    | [1.4.4](/files/otto1.4.4.bin)     |
+| v2.0.5   | 2025-12-8  | 更新电量下限，动作时不更新电量                                                                                       | 已归档                            |
+| v2.0.4-2 | 2025-11-17 | 增加微信小程序控制/校准/自定义功能                                                                                   | 已归档                            |
+| v2.0.4   | 2025-10-31 | 更新到小智 2.0.4 增加了一些固定动作和 AI 自定义编程动作，具体查看[使用说明](/docs/usage#五动作)中的 MCP 工具介绍     | 已归档                            |
+| v1.4.4   | 2025-6-13  | 新增初始位置校准，“对话：校准左脚到 10 度/-10 度"                                                                    | 已归档                            |
 | v1.4.3   | 2025-6-13  | fix(ota): 修复 OTA 升级崩溃问题 bug                                                                                  | 1.4.3                             |
 | v1.4.2   | 2025-6-5   | 1.规范代码<br/>2.修复主题无法切换 bug                                                                                | 1.4.2                             |
 | v1.4.0   | 2025-6-5   | 1.更新到小智 1.7.0<br/>2.MCP 协议控制机器人动作<br/>3.gif 表情继承 lcdDisplay，otto 专用主题                         | 1.4.0                             |
-| v1.3.1   | 2025-5-27  | 1.增加任务优先级防止聆听状态动作变慢<br/>2.动作任务常驻，不 detach 解决"抽筋"bug，但是会增加耗电<br/>3.home 恢复 500 | [1.3.1](/files/otto1.3.1.bin)     |
+| v1.3.1   | 2025-5-27  | 1.增加任务优先级防止聆听状态动作变慢<br/>2.动作任务常驻，不 detach 解决"抽筋"bug，但是会增加耗电<br/>3.home 恢复 500 | 已归档                            |
 | v1.2     | 2025-4-26  | 增加手臂功能代码                                                                                                     | 1.2                               |
 | v1.1     | 2025-4-23  | 更新到小智 1.6.0，另修复突然"瘫痪"bug                                                                                | 1.1                               |
 | v1.0     | 2025-4-9   | 初始版本，包含基本动作和语音控制功能                                                                                 | 1.0                               |
@@ -80,7 +81,7 @@ v2.0.4-2 版本支持通过微信小程序进行机器人控制、校准和自�
 esptool.py --chip esp32s3 merge_bin -o merged-flash.bin --flash_mode dio --flash_size 16MB 0x0 build/bootloader/bootloader.bin 0x100000 build/xiaozhi.bin 0x8000 build/partition_table/partition-table.bin 0xd000 build/ota_data_initial.bin 0x10000 build/srmodels/srmodels.bin
 ```
 
-#### V2（v2.x 固件，如 v2.0.4、v2.3.0）
+#### V2（v2.x 固件，如 v2.0.4、v2.4.2）
 
 ```bash
 esptool.py --chip esp32s3 merge_bin -o merged-flash.bin --flash_mode dio --flash_size 16MB 0x0 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0xd000 build/ota_data_initial.bin 0x20000 build/xiaozhi.bin 0x800000 build/generated_assets.bin

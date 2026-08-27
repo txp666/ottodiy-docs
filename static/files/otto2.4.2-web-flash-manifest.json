@@ -1,13 +1,13 @@
 {
-  "name": "Otto DIY ESP32+AI v1.3.1",
-  "version": "1.3.1",
+  "name": "Otto DIY ESP32+AI v2.4.2",
+  "version": "2.4.2",
   "new_install_prompt_erase": true,
   "builds": [
     {
       "chipFamily": "ESP32-S3",
       "parts": [
         {
-          "path": "otto1.3.1.bin",
+          "path": "otto2.4.2.bin",
           "offset": 0
         }
       ]

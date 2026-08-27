@@ -130,6 +130,11 @@ const config = {
             label: '程序下载',
           },
           {
+            to: '/docs/build-guide',
+            position: 'left',
+            label: '编译教程',
+          },
+          {
             to: '/docs/assembly', 
             position: 'left',
             label: '组装教程',

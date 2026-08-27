@@ -22,6 +22,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 ### ESP32+AI 版本源代码
 
 - **GitHub 仓库**：[小智 ESP32 AI 机器人源码](https://github.com/txp666/xiaozhi-esp32)
+- **编译教程**：[使用 VS Code 和 ESP-IDF 编译 Otto Robot 固件](./build-guide)
 - **功能**：包含 Wi-Fi 连接、语音识别、AI 对话等全部功能
 - **适用**：对开发和定制有兴趣的用户
 

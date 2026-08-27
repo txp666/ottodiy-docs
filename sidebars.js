@@ -49,6 +49,11 @@ const sidebars = {
     },
     {
       type: 'doc',
+      id: 'build-guide',
+      label: '编译教程',
+    },
+    {
+      type: 'doc',
       id: 'assembly',
       label: '组装教程',
     },

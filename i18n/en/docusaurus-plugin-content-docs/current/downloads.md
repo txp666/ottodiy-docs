@@ -22,6 +22,7 @@ Here you can find all program files and source code links related to the Otto DI
 ### ESP32+AI Version Source Code
 
 - **GitHub Repository**: [Xiaozhi ESP32 AI Robot Source Code](https://github.com/txp666/xiaozhi-esp32)
+- **Build Guide**: [Build the Otto Robot firmware with VS Code and ESP-IDF](./build-guide)
 - **Features**: Includes all features such as Wi-Fi connection, voice recognition, AI dialogue
 - **For**: Users interested in development and customization
 
@@ -41,7 +42,7 @@ Here you can find all program files and source code links related to the Otto DI
 | v2.2.6   | 2026-5-18    | Optimized Otto action ending and adaptive homing smoothness; fixed WebSocket direct connections not receiving MCP responses; improved Otto camera backend initialization stability            | [2.2.6](/files/otto2.2.6.bin)     |
 | v2.0.5   | 2025-12-8    | Updated battery lower limit, battery level not updated during actions                                                                                                                        | [2.0.5](/files/otto2.0.5.bin)     |
 | v2.0.4-2 | 2025-11-17   | Added WeChat Mini Program control/calibration/customization features                                                                                                                         | [2.0.4-2](/files/otto2.0.4-2.bin) |
-| v2.0.4   | 2025-10-31   | Updated to Xiaozhi 2.0.4 with added fixed actions and AI custom programmed actions, see MCP tools in [User Manual](/docs/usage#五动作) for details                                           | [2.0.4](/files/otto2.0.4.bin)     |
+| v2.0.4   | 2025-10-31   | Updated to Xiaozhi 2.0.4 with added fixed actions and AI custom programmed actions, see MCP tools in [User Manual](./usage#5-actions) for details                                             | [2.0.4](/files/otto2.0.4.bin)     |
 | v1.4.4   | 2025-6-13    | Added initial position calibration, "Dialogue: calibrate left foot to 10 degrees/-10 degrees"                                                                                                | [1.4.4](/files/otto1.4.4.bin)     |
 | v1.4.3   | 2025-6-13    | fix(ota): Fixed OTA upgrade crash bug                                                                                                                                                        | 1.4.3                             |
 | v1.4.2   | 2025-6-5     | 1. Code standardization<br/>2. Fixed theme switching bug                                                                                                                                     | 1.4.2                             |

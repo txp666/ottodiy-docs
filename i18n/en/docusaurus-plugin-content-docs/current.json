@@ -27,6 +27,10 @@
     "message": "Downloads",
     "description": "The label for the doc item 程序下载 in sidebar tutorialSidebar, linking to the doc downloads"
   },
+  "sidebar.tutorialSidebar.doc.编译教程": {
+    "message": "Build Guide",
+    "description": "The label for the doc item 编译教程 in sidebar tutorialSidebar, linking to the doc build-guide"
+  },
   "sidebar.tutorialSidebar.doc.组装教程": {
     "message": "Assembly Guide",
     "description": "The label for the doc item 组装教程 in sidebar tutorialSidebar, linking to the doc assembly"

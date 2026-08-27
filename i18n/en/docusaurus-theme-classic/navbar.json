@@ -27,6 +27,10 @@
     "message": "Downloads",
     "description": "Navbar item with label 程序下载"
   },
+  "item.label.编译教程": {
+    "message": "Build Guide",
+    "description": "Navbar item with label 编译教程"
+  },
   "item.label.组装教程": {
     "message": "Assembly Guide",
     "description": "Navbar item with label 组装教程"

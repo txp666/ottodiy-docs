@@ -46,6 +46,7 @@
     "node": ">=18.0"
   },
   "overrides": {
-    "shell-quote": "1.9.0"
+    "shell-quote": "1.9.0",
+    "websocket-driver": "0.7.5"
   }
 }

@@ -10,6 +10,12 @@ let espWebToolsPromise;
 
 const firmwareOptions = [
   {
+    version: 'v2.5.3',
+    date: '2026-10-19',
+    bin: '/files/otto2.5.3.bin',
+    manifest: '/files/otto2.5.3-web-flash-manifest.json',
+  },
+  {
     version: 'v2.4.2',
     date: '2026-8-27',
     bin: '/files/otto2.4.2.bin',
@@ -62,7 +68,7 @@ function loadEspWebTools(scriptUrl) {
 
 export default function FirmwareFlasher({
   locale = 'zh',
-  defaultVersion = 'v2.4.2',
+  defaultVersion = 'v2.5.3',
   firmwareVersion,
 }) {
   const initialVersion = firmwareVersion || defaultVersion;

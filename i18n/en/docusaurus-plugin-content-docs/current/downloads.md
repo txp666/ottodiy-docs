@@ -15,7 +15,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 Here you can find all program files and source code links related to the Otto DIY robot.
 
-<FirmwareFlasher locale="en" firmwareVersion="v2.4.2" />
+<FirmwareFlasher locale="en" firmwareVersion="v2.5.3" />
 
 ## Source Code Repositories
 
@@ -38,6 +38,7 @@ Here you can find all program files and source code links related to the Otto DI
 
 | Version  | Release Date | Feature Description                                                                                                                                                                          | Download Link                     |
 | -------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| v2.5.3   | 2026-10-19   | Updated to Xiaozhi 2.5.3; redrew all 21 expressions with smoother transitions                                                                                                               | [2.5.3](/files/otto2.5.3.bin)     |
 | v2.4.2   | 2026-8-27    | Updated to Xiaozhi 2.4.2                                                                                                                                                                    | [2.4.2](/files/otto2.4.2.bin)     |
 | v2.3.0   | 2026-7-16    | Expanded the expression library to 21 expressions                                                                                                                                           | [2.3.0](/files/otto2.3.0.bin)     |
 | v2.2.6   | 2026-5-18    | Optimized Otto action ending and adaptive homing smoothness; fixed WebSocket direct connections not receiving MCP responses; improved Otto camera backend initialization stability            | [2.2.6](/files/otto2.2.6.bin)     |

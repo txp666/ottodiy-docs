@@ -15,7 +15,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 在这里，您可以找到 Otto DIY 机器人相关的所有程序文件和源代码链接。
 
-<FirmwareFlasher firmwareVersion="v2.4.2" />
+<FirmwareFlasher firmwareVersion="v2.5.3" />
 
 ## 源代码仓库
 
@@ -38,6 +38,7 @@ export const ImgWithBaseUrl = ({src, alt, width}) => (
 
 | 版本     | 发布日期   | 功能描述                                                                                                             | 下载链接                          |
 | -------- | ---------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| v2.5.3   | 2026-10-19 | 更新至小智 2.5.3；21 个表情全部重新绘制，过渡更流畅                                                             | [2.5.3](/files/otto2.5.3.bin)     |
 | v2.4.2   | 2026-8-27  | 更新至小智 2.4.2                                                                                                     | [2.4.2](/files/otto2.4.2.bin)     |
 | v2.3.0   | 2026-7-16  | 表情新增至 21 个                                                                                                     | [2.3.0](/files/otto2.3.0.bin)     |
 | v2.2.6   | 2026-5-18  | 优化 Otto动作收尾与自适应归位平滑度；修复 WebSocket 直连未收到 MCP 响应；调整 Otto 相机后端初始化稳定性 | [2.2.6](/files/otto2.2.6.bin)     |
@@ -81,7 +82,7 @@ v2.0.4-2 版本支持通过微信小程序进行机器人控制、校准和自�
 esptool.py --chip esp32s3 merge_bin -o merged-flash.bin --flash_mode dio --flash_size 16MB 0x0 build/bootloader/bootloader.bin 0x100000 build/xiaozhi.bin 0x8000 build/partition_table/partition-table.bin 0xd000 build/ota_data_initial.bin 0x10000 build/srmodels/srmodels.bin
 ```
 
-#### V2（v2.x 固件，如 v2.0.4、v2.4.2）
+#### V2（v2.x 固件，如 v2.0.4、v2.5.3）
 
 ```bash
 esptool.py --chip esp32s3 merge_bin -o merged-flash.bin --flash_mode dio --flash_size 16MB 0x0 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0xd000 build/ota_data_initial.bin 0x20000 build/xiaozhi.bin 0x800000 build/generated_assets.bin

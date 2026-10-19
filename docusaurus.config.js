@@ -104,6 +104,16 @@ const config = {
         },
         items: [
           {
+            to: '/docs/build-guide',
+            position: 'left',
+            label: '编译教程',
+          },
+          {
+            to: '/docs/assembly',
+            position: 'left',
+            label: '组装教程',
+          },
+          {
             to: '/playground',
             position: 'left',
             label: '在线调试',

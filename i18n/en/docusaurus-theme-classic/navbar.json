@@ -7,6 +7,14 @@
     "message": "OttoDIY Logo",
     "description": "The alt text of navbar logo"
   },
+  "item.label.编译教程": {
+    "message": "Build Guide",
+    "description": "Navbar item with label 编译教程"
+  },
+  "item.label.组装教程": {
+    "message": "Assembly Guide",
+    "description": "Navbar item with label 组装教程"
+  },
   "item.label.在线调试": {
     "message": "Console",
     "description": "Navbar item with label 在线调试"
